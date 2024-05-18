@@ -6,6 +6,7 @@ import { PrivateRoute } from "./routes/PrivateRoute";
 import IncomingTransactions from "./pages/IncomingTransactions";
 import WithdrawTransactions from "./pages/WithdrawTransactions";
 import PaymentDetails from "./pages/PaymentDetails";
+import UserProfile from "./pages/UserProfile";
 
 export default () => {
   return (
@@ -24,6 +25,7 @@ export default () => {
           <Route path="/payment-details" element={<PaymentDetails />} />
 
           <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<UserProfile />} />
           <Route path="*" element={<Result status="404" title="404" />} />
         </Route>
       </Routes>
