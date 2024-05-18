@@ -2,61 +2,27 @@ import { App, Button, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { api } from "../services/api";
 const { Text } = Typography;
 
-const api = axios.create({
-  baseURL: "http://95.213.173.58:3000",
-  headers: {
-    Authorization: `Bearer ${import.meta.env.VITE_BEARER_TOKEN}`,
-  },
-});
-
 const IncomingTransactions = () => {
-  const [token, setToken] = useState("");
   const [appState, setAppState] = useState();
-  const apiAuthOptions = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  const [loading, setLoading] = useState(false);
-  const { notification } = App.useApp();
 
   useEffect(() => {
-    api
-      .post("auth/sign", {
-        email: import.meta.env.VITE_EMAIL,
-        password: import.meta.env.VITE_PASS,
-      })
-      .then((res) => setToken(res.data.tokens.accessToken));
+    fetchData();
   }, []);
 
-  async function fetchData(token: string) {
-    api
-      .get("admin/transactions", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((resp) => {
-        setAppState(resp.data.data);
-      });
+  async function fetchData() {
+    api.get("admin/transactions").then((resp) => {
+      setAppState(resp.data.data);
+    });
   }
 
-  useEffect(() => {
-    if (!token) return;
-    fetchData(token);
-  }, [token]);
-
   async function confirmTransaction(transactionId: string) {
-    await api.post(
-      "admin/confirm-transaction",
-      {
-        transaction_id: transactionId,
-      },
-      apiAuthOptions
-    );
-    await fetchData(token);
+    await api.post("admin/confirm-transaction", {
+      transaction_id: transactionId,
+    });
+    await fetchData();
   }
 
   /*
@@ -124,12 +90,21 @@ const IncomingTransactions = () => {
               Подтвердить
             </Button>
           );
-        }else if(item.type==="crypto" && item.status==="pending"){
+        } else if (item.type === "crypto" && item.status === "pending") {
           return (
-            <Button onClick={() => (window as any).open(`https://app.cryptocloud.plus/payment/transaction/${item.invoice_id}`, '_blank').focus()}>
+            <Button
+              onClick={() =>
+                (window as any)
+                  .open(
+                    `https://app.cryptocloud.plus/payment/transaction/${item.invoice_id}`,
+                    "_blank"
+                  )
+                  .focus()
+              }
+            >
               Оплатить (тест)
             </Button>
-          )
+          );
         }
         return null;
       },

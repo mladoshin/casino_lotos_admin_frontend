@@ -2,72 +2,34 @@ import { App, Button, Space, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { api } from "../services/api";
 const { Text } = Typography;
 
-const api = axios.create({
-  baseURL: "http://95.213.173.58:3000",
-  headers: {
-    Authorization: `Bearer ${import.meta.env.VITE_BEARER_TOKEN}`,
-  },
-});
-
 const WithdrawTransactions = () => {
-  const [token, setToken] = useState("");
   const [appState, setAppState] = useState();
-  const apiAuthOptions = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  const [loading, setLoading] = useState(false);
-  const { notification } = App.useApp();
 
   useEffect(() => {
-    api
-      .post("auth/sign", {
-        email: import.meta.env.VITE_EMAIL,
-        password: import.meta.env.VITE_PASS,
-      })
-      .then((res) => setToken(res.data.tokens.accessToken));
+    fetchData();
   }, []);
 
-  async function fetchData(token: string) {
-    api
-      .get("admin/withdraw-history", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((resp) => {
-        setAppState(resp.data.data);
-      });
+  async function fetchData() {
+    api.get("admin/withdraw-history").then((resp) => {
+      setAppState(resp.data.data);
+    });
   }
 
-  useEffect(() => {
-    if (!token) return;
-    fetchData(token);
-  }, [token]);
-
   async function confirmWithdraw(transactionId: string) {
-    await api.post(
-      "admin/confirm-withdraw",
-      {
-        withdraw_transaction_id: transactionId,
-      },
-      apiAuthOptions
-    );
-    await fetchData(token);
+    await api.post("admin/confirm-withdraw", {
+      withdraw_transaction_id: transactionId,
+    });
+    await fetchData();
   }
 
   async function cancelWithdraw(transactionId: string) {
-    await api.post(
-      "admin/cancel-withdraw",
-      {
-        withdraw_transaction_id: transactionId,
-      },
-      apiAuthOptions
-    );
-    await fetchData(token);
+    await api.post("admin/cancel-withdraw", {
+      withdraw_transaction_id: transactionId,
+    });
+    await fetchData();
   }
 
   /*

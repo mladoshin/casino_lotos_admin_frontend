@@ -1,8 +1,8 @@
-import { Button, Tag, Typography, Table, Avatar, App } from 'antd'
-import { useEffect, useState } from 'react';
-const { Text } = Typography;
+import { App, Avatar, Button, Table, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import axios from 'axios'
+import { useEffect, useState } from 'react';
+import { api } from '../services/api';
+const { Text } = Typography;
 
 
 const Games = () => {
@@ -17,9 +17,8 @@ const Games = () => {
   };
 
   useEffect(() => {
-    const apiUrl = 'http://95.213.173.58:3000/games';
-    axios.get(apiUrl).then((resp) => {
-      const allPersons = resp.data?.content?.gameList;
+    api.get("games").then((resp) => {
+      const allPersons = resp.data;
       setAppState(allPersons);
     });
   }, []);

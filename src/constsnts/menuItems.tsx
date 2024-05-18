@@ -29,4 +29,7 @@ export const menuItems: MenuProps['items'] = [
     getItem('Список игр', '/games'),
     getItem('История игр', '/gameHistory'),
   ]),
+  getItem('Настройки', 'sub3', <UsergroupAddOutlined />, [
+    getItem('Реквизиты', '/payment-details'),
+  ]),
 ];
