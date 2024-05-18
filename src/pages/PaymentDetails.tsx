@@ -1,7 +1,7 @@
 import { Button, Input, List, Space } from "antd";
 import React, { useEffect, useState } from "react";
 import { api } from "../services/api";
-
+import { DeleteOutlined } from "@ant-design/icons";
 function PaymentDetails() {
   const [data, setData] = useState<any>({});
 
@@ -22,6 +22,13 @@ function PaymentDetails() {
     setData(tmp);
   }
 
+  function deleteItem(field: "card" | "sbp", index: number) {
+    const f = field === "card" ? "card" : "tel";
+    const tmp = JSON.parse(JSON.stringify(data));
+    tmp[field].splice(index, 1);
+    setData(tmp);
+  }
+
   function handleCangeField(
     type: "card" | "sbp",
     index: number,
@@ -33,12 +40,12 @@ function PaymentDetails() {
     setData(tmp);
   }
 
-  async function savePaymentDetails(){
-    try{
-        await api.post('admin/payment-details', data);
-        await fetchData()
-    }catch(error){
-        console.log(error)
+  async function savePaymentDetails() {
+    try {
+      await api.post("admin/payment-details", data);
+      await fetchData();
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -60,11 +67,19 @@ function PaymentDetails() {
             />
 
             <Input
+              style={{ marginLeft: 20 }}
               value={item.card}
               onChange={(e) =>
                 handleCangeField("card", index, "card", e.target.value)
               }
             />
+            <div style={{ marginLeft: 20 }}>
+              <Button
+                icon={<DeleteOutlined />}
+                danger
+                onClick={() => deleteItem("card", index)}
+              />
+            </div>
           </List.Item>
         )}
       />
@@ -86,11 +101,19 @@ function PaymentDetails() {
             />
 
             <Input
+              style={{ marginLeft: 20 }}
               value={item.tel}
               onChange={(e) =>
                 handleCangeField("sbp", index, "tel", e.target.value)
               }
             />
+            <div style={{ marginLeft: 20 }}>
+              <Button
+                icon={<DeleteOutlined />}
+                danger
+                onClick={() => deleteItem("sbp", index)}
+              />
+            </div>
           </List.Item>
         )}
       />
@@ -99,7 +122,9 @@ function PaymentDetails() {
         style={{ width: "100%", justifyContent: "flex-end", marginTop: 50 }}
       >
         <Button onClick={fetchData}>Отменить</Button>
-        <Button type="primary" onClick={savePaymentDetails}>Сохранить изменения</Button>
+        <Button type="primary" onClick={savePaymentDetails}>
+          Сохранить изменения
+        </Button>
       </Space>
     </div>
   );
