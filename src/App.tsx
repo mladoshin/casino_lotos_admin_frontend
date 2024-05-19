@@ -9,6 +9,7 @@ import Users from "./pages/Users";
 import WithdrawTransactions from "./pages/WithdrawTransactions";
 import { PrivateRoute } from "./routes/PrivateRoute";
 import Managers from "./pages/Managers";
+import ReferralInvitations from "./pages/ReferralInvitations";
 
 export default () => {
   return (
@@ -29,6 +30,7 @@ export default () => {
 
           <Route path="/users" element={<Users />} />
           <Route path="/managers" element={<Managers />} />
+          <Route path="/referral-invitations" element={<ReferralInvitations />} />
 
           <Route path="/users/:id" element={<UserProfile />} />
           <Route path="*" element={<Result status="404" title="404" />} />

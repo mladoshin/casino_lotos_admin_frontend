@@ -24,9 +24,9 @@ export const menuItems: MenuProps['items'] = [
   getItem('Пользователи', 'sub1', <UsergroupAddOutlined />, [
     getItem('Все пользователи', '/users'),
     getItem('Менеджеры', '/managers'),
-
     getItem('Заявки на вывод', '/withdraw-transactions'),
     getItem('Пополнения', '/incoming-transactions'),
+    getItem('Реферальные ссылки', '/referral-invitations'),
   ]),
   getItem('Игры', 'sub2', <UsergroupAddOutlined />, [
     getItem('Список игр', '/games'),
