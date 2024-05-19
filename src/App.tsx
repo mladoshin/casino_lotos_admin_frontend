@@ -7,6 +7,7 @@ import IncomingTransactions from "./pages/IncomingTransactions";
 import WithdrawTransactions from "./pages/WithdrawTransactions";
 import PaymentDetails from "./pages/PaymentDetails";
 import UserProfile from "./pages/UserProfile";
+import Notifications from "./pages/Notifications";
 
 export default () => {
   return (
@@ -23,6 +24,8 @@ export default () => {
             element={<WithdrawTransactions />}
           />
           <Route path="/payment-details" element={<PaymentDetails />} />
+          <Route path="/notifications" element={<Notifications />} />
+
 
           <Route path="/users" element={<Users />} />
           <Route path="/users/:id" element={<UserProfile />} />
