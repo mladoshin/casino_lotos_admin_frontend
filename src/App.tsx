@@ -8,6 +8,7 @@ import UserProfile from "./pages/UserProfile";
 import Users from "./pages/Users";
 import WithdrawTransactions from "./pages/WithdrawTransactions";
 import { PrivateRoute } from "./routes/PrivateRoute";
+import Managers from "./pages/Managers";
 
 export default () => {
   return (
@@ -27,6 +28,8 @@ export default () => {
           <Route path="/notifications" element={<Notifications />} />
 
           <Route path="/users" element={<Users />} />
+          <Route path="/managers" element={<Managers />} />
+
           <Route path="/users/:id" element={<UserProfile />} />
           <Route path="*" element={<Result status="404" title="404" />} />
         </Route>

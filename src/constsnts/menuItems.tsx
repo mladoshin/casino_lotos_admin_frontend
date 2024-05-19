@@ -23,6 +23,8 @@ export const menuItems: MenuProps['items'] = [
   getItem('Уведомления', '/notifications'),
   getItem('Пользователи', 'sub1', <UsergroupAddOutlined />, [
     getItem('Все пользователи', '/users'),
+    getItem('Менеджеры', '/managers'),
+
     getItem('Заявки на вывод', '/withdraw-transactions'),
     getItem('Пополнения', '/incoming-transactions'),
   ]),
