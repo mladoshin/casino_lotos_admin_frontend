@@ -1,4 +1,14 @@
-import { Button, Tag, Typography, Table, App, notification } from "antd";
+import {
+  Button,
+  Tag,
+  Typography,
+  Table,
+  App,
+  notification,
+  Space,
+  Modal,
+  Input,
+} from "antd";
 import { useEffect, useState } from "react";
 const { Text } = Typography;
 import type { ColumnsType } from "antd/es/table";
@@ -7,13 +17,18 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 
 const Users = () => {
+  const [messageModalOpen, setMessageModalOpen] = useState<string | null>(null);
+  const [message, setMessage] = useState<string>("");
+
   const [appState, setAppState] = useState();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [loadingSendMessage, setLoadingSendMessage] = useState(false);
+  const [notificationApi, contextHolder] = notification.useNotification();
 
-  useEffect(()=>{
-    fetchData()
-  }, [])
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   async function fetchData() {
     try {
@@ -24,6 +39,20 @@ const Users = () => {
       console.log(error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function sendMessage(userId: string, message: string) {
+    try {
+      setLoadingSendMessage(true);
+      await api.post("admin/send-message", { user_id: userId, message });
+      setMessage("");
+      notificationApi.success({ message: "Сообщение успешно отправлено" });
+    } catch (error) {
+      console.log(error);
+      notificationApi.error({ message: "Ошибка отправки сообщения" });
+    } finally {
+      setLoadingSendMessage(false);
     }
   }
 
@@ -68,19 +97,50 @@ const Users = () => {
       title: "",
       key: "action",
       render: (_, item) => (
-        <Button onClick={() => navigate(item.id)}>Открыть</Button>
+        <Space>
+          <Button onClick={() => navigate(item.id)}>Открыть</Button>
+          <Button onClick={() => setMessageModalOpen(item.id)}>
+            Сообщение
+          </Button>
+        </Space>
       ),
     },
   ];
 
   return (
     <>
+      {contextHolder}
       <Table
         loading={loading}
         columns={columns}
         dataSource={appState}
         rowKey={(meditation) => meditation.id}
       />
+
+      <Modal
+        open={!!messageModalOpen}
+        title="Новое сообщение"
+        onCancel={() => setMessageModalOpen(null)}
+        footer={[
+          <Button key="back" onClick={() => setMessageModalOpen(null)}>
+            Отменить
+          </Button>,
+          <Button
+            type="primary"
+            loading={loadingSendMessage}
+            onClick={() => sendMessage(messageModalOpen, message)}
+          >
+            Отправить
+          </Button>,
+        ]}
+      >
+        <Input.TextArea
+          rows={4}
+          placeholder="Введите сообщение"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+      </Modal>
     </>
   );
 };
