@@ -1,7 +1,7 @@
 import { Layout, Menu, notification, theme } from "antd";
 import { useNavigate } from "react-router-dom";
 
-import { menuItems } from "../constsnts/menuItems";
+import { menuItems } from "../constants/menuItems";
 import { useEffect } from "react";
 import { createSocket } from "../services/socketService";
 

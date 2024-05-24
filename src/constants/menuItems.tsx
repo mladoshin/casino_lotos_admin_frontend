@@ -31,6 +31,7 @@ export const menuItems: MenuProps['items'] = [
   getItem('Игры', 'sub2', <UsergroupAddOutlined />, [
     getItem('Список игр', '/games'),
     getItem('История игр', '/gameHistory'),
+    getItem('Расположение игр', '/game-placement'),
   ]),
   getItem('Настройки', 'sub3', <UsergroupAddOutlined />, [
     getItem('Реквизиты', '/payment-details'),
