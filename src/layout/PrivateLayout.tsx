@@ -13,7 +13,7 @@ type Props = {
 const { Content, Footer, Sider } = Layout;
 
 const PrivateLayout = ({ children }: Props) => {
-  const socket = createSocket(sessionStorage.getItem("accessToken"));
+  const socket = createSocket(localStorage.getItem("accessToken"));
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const {
