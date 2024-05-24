@@ -5,19 +5,17 @@ const createApi = async (): Promise<AxiosInstance> => {
     baseURL: import.meta.env.VITE_API_URL,
   });
 
-  // TODO: 2024-04-29 / добавить обработку ошибок
-  // - пустые переменные
-  // - error respoce
-  const res = await api.post("auth/sign", {
-    email: import.meta.env.VITE_EMAIL,
-    password: import.meta.env.VITE_PASS,
-  });
-
-  const token = res.data.tokens.accessToken;
-  sessionStorage.setItem("accessToken", token);
+  let token = localStorage.getItem("accessToken");
+  if (!token) {
+    if (window.location.href !== `${window.location.origin}/login`) {
+      window.location.href = `${window.location.origin}/login`;
+    }
+  }
 
   api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-    config.headers["Authorization"] = `Bearer ${token}`;
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
 
     return config;
   });

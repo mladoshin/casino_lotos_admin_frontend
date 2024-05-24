@@ -13,7 +13,11 @@ function UserProfile() {
 
   async function fetchData(id: string) {
     try {
-      const resp = await api.get(`admin/user-profile/${id}`);
+      const resp = await api.get(`admin/user-profile/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
       setUserProfile(resp.data);
     } catch (error) {
       console.log(error);
@@ -34,7 +38,7 @@ function UserProfile() {
           <List.Item>
             <b>{field}</b>
 
-            <span>{(userProfile || {})[field] || '—'}</span>
+            <span>{(userProfile || {})[field] || "—"}</span>
           </List.Item>
         )}
       />

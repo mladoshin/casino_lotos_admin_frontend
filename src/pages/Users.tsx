@@ -1,20 +1,17 @@
 import {
   Button,
-  Tag,
-  Typography,
-  Table,
-  App,
-  notification,
-  Space,
-  Modal,
   Input,
+  Modal,
+  Space,
+  Table,
+  Typography,
+  notification
 } from "antd";
-import { useEffect, useState } from "react";
-const { Text } = Typography;
 import type { ColumnsType } from "antd/es/table";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
+const { Text } = Typography;
 
 const Users = () => {
   const [messageModalOpen, setMessageModalOpen] = useState<string | null>(null);
@@ -33,7 +30,11 @@ const Users = () => {
   async function fetchData() {
     try {
       setLoading(true);
-      const resp = await api.get(`user`);
+      const resp = await api.get(`user`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
       setAppState(resp.data);
     } catch (error) {
       console.log(error);
@@ -45,7 +46,27 @@ const Users = () => {
   async function sendMessage(userId: string, message: string) {
     try {
       setLoadingSendMessage(true);
-      await api.post("admin/send-message", { user_id: userId, message });
+      if (userId === "all") {
+        await api.post(
+          "admin/broadcast-message",
+          { message },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+      } else {
+        await api.post(
+          "admin/send-message",
+          { user_id: userId, message },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          }
+        );
+      }
       setMessage("");
       notificationApi.success({ message: "Сообщение успешно отправлено" });
     } catch (error) {
@@ -116,6 +137,13 @@ const Users = () => {
         dataSource={appState}
         rowKey={(meditation) => meditation.id}
       />
+      <Button
+        type="primary"
+        loading={loadingSendMessage}
+        onClick={() => setMessageModalOpen("all")}
+      >
+        Отправить сообщение всем
+      </Button>
 
       <Modal
         open={!!messageModalOpen}

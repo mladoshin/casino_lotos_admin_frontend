@@ -35,7 +35,15 @@ function ReferralInvitations() {
   async function handleCreateReferralInvitation(expireDate: string) {
     try {
       setLoadingCreateReferralInvitations(true);
-      await api.post("referral-invite", { expire_date: expireDate });
+      await api.post(
+        "referral-invite",
+        { expire_date: expireDate },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
       handleModalClose();
       await fetchData();
     } catch (error) {
@@ -53,7 +61,11 @@ function ReferralInvitations() {
   async function fetchData() {
     try {
       setLoading(true);
-      const resp = await api.get(`referral-invite`);
+      const resp = await api.get(`referral-invite`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
       setReferralInvitations(resp.data.data);
     } catch (error) {
       console.log(error);
@@ -64,7 +76,11 @@ function ReferralInvitations() {
 
   async function handleDeleteReferralInvitation(id: string) {
     try {
-      await api.delete(`referral-invite/${id}`);
+      await api.delete(`referral-invite/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
       await fetchData();
     } catch (error) {
       console.log(error);

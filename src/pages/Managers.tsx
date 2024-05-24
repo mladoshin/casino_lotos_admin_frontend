@@ -20,9 +20,17 @@ function Managers() {
   async function handleCreateManager(email: string, password: string) {
     try {
       setLoadingCreateManager(true);
-      await api.post("admin/create-manager", { email, password });
+      await api.post(
+        "admin/create-manager",
+        { email, password },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
+      );
       handleModalClose();
-      await fetchData()
+      await fetchData();
     } catch (error) {
       console.log(error);
     } finally {
@@ -39,7 +47,11 @@ function Managers() {
   async function fetchData() {
     try {
       setLoading(true);
-      const resp = await api.get(`admin/managers`);
+      const resp = await api.get(`admin/managers`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
       setManagers(resp.data.data);
     } catch (error) {
       console.log(error);

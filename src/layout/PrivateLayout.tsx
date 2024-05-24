@@ -1,9 +1,10 @@
-import { Layout, Menu, notification, theme } from "antd";
+import { Button, Layout, Menu, Space, Spin, notification, theme } from "antd";
 import { useNavigate } from "react-router-dom";
 
 import { menuItems } from "../constants/menuItems";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createSocket } from "../services/socketService";
+import { api } from "../services/api";
 
 type Props = {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ const { Content, Footer, Sider } = Layout;
 
 const PrivateLayout = ({ children }: Props) => {
   const socket = createSocket(sessionStorage.getItem("accessToken"));
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -26,6 +28,9 @@ const PrivateLayout = ({ children }: Props) => {
   const [notificationApi, contextHolder] = notification.useNotification();
 
   useEffect(() => {
+    // check if user is authenticated
+    validateUser();
+
     socket.on("connect", () => console.log("Connected"));
     socket.on("disconnect", () => console.log("Disconnected"));
     socket.on("admin-message", handleReceiveMessage);
@@ -37,7 +42,6 @@ const PrivateLayout = ({ children }: Props) => {
     socket.on("withdraw.pending", handleReceiveMessage);
     socket.on("withdraw.cancelled", handleReceiveMessage);
     socket.on("withdraw.success", handleReceiveMessage);
-
 
     return () => {
       socket.off("connect", () => console.log("Connected"));
@@ -54,12 +58,51 @@ const PrivateLayout = ({ children }: Props) => {
     };
   }, []);
 
+  async function validateUser() {
+    const accessToken = localStorage.getItem("accessToken");
+    let error = false;
+
+    if (!accessToken) {
+      error = true;
+    }
+
+    try {
+      await api.get("user/profile", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      error = true;
+    }
+
+    if (error) {
+      navigate("login");
+    }
+  }
+
   function handleReceiveMessage(message: string | { msg: string; data: any }) {
     let msg = message as string;
     if (typeof message !== "string") {
       msg = message.msg;
     }
-    notificationApi.info({ message: msg, placement: 'bottomRight' })
+    notificationApi.info({ message: msg, placement: "bottomRight" });
+  }
+
+  function handleLogout() {
+    sessionStorage.removeItem("refreshToken");
+    localStorage.removeItem("accessToken");
+    navigate("/login");
+  }
+
+  if (loading) {
+    return (
+      <Space style={{ justifyContent: "center" }}>
+        <Spin size="large" />
+      </Space>
+    );
   }
 
   return (
@@ -88,7 +131,9 @@ const PrivateLayout = ({ children }: Props) => {
           </Content>
         </Layout>
       </Content>
-      <Footer style={{ textAlign: "center" }}>©2024 Admin Panel</Footer>
+      <Footer style={{ textAlign: "center" }}>
+        <Button onClick={handleLogout}>Выйти</Button>
+      </Footer>
     </Layout>
   );
 };

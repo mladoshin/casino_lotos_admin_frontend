@@ -10,7 +10,11 @@ function PaymentDetails() {
   }, []);
 
   async function fetchData() {
-    const resp = await api.get("/admin/payment-details");
+    const resp = await api.get("/admin/payment-details", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
     console.log(resp.data);
     setData(resp.data);
   }
@@ -42,7 +46,11 @@ function PaymentDetails() {
 
   async function savePaymentDetails() {
     try {
-      await api.post("admin/payment-details", data);
+      await api.post("admin/payment-details", data, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
       await fetchData();
     } catch (error) {
       console.log(error);

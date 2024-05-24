@@ -11,11 +11,14 @@ import { PrivateRoute } from "./routes/PrivateRoute";
 import Managers from "./pages/Managers";
 import ReferralInvitations from "./pages/ReferralInvitations";
 import GamePlacement from "./pages/GamePlacement";
+import LoginPage from "./pages/LoginPage";
 
 export default () => {
   return (
     <App style={{ height: "100%" }} notification={{ placement: "topRight" }}>
       <Routes>
+        <Route path="login" element={<LoginPage />} />
+
         <Route path="/" element={<PrivateRoute />}>
           <Route path="/games" element={<Games />} />
           <Route
