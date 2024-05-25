@@ -59,13 +59,19 @@ function GamePlacement() {
 
       console.log("Reorder", tmpGames);
       try {
-        api.patch("/admin/save-games-placement", {
-          category,
-          games: tmpGames.map((g, id) => ({
-            game_placement_id: g.placement_id,
-            order: id,
-          })),
-        });
+        withCredentials((headers) =>
+          api.patch(
+            "/admin/save-games-placement",
+            {
+              category,
+              games: tmpGames.map((g, id) => ({
+                game_placement_id: g.placement_id,
+                order: id,
+              })),
+            },
+            headers
+          )
+        );
       } catch (error) {
         console.log(error);
       }
