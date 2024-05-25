@@ -10,16 +10,19 @@ function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function onFinish(email: string, password: string) {
     try {
+      setLoading(true);
       const resp = await api.post("auth/sign", { email, password });
       const tokens = resp.data.tokens;
       localStorage.setItem("accessToken", tokens.accessToken);
       sessionStorage.setItem("refreshToken", tokens.refreshToken);
-      navigate("/games");
+      navigate("/games")
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   }
 
@@ -87,7 +90,7 @@ function LoginPage() {
             {/* <a href="">Забыли пароль?</a> */}
           </Form.Item>
           <Form.Item style={{ marginBottom: "0px" }}>
-            <Button block type="primary" htmlType="submit">
+            <Button block type="primary" htmlType="submit" loading={loading}>
               Войти
             </Button>
           </Form.Item>

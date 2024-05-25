@@ -8,12 +8,15 @@ import {
   notification,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, withCredentials } from "../services/api";
+import { AppContext } from "../context/AppContext";
+import { UserRole } from "../routes/types";
 const { Text } = Typography;
 
 const Users = () => {
+  const { user } = useContext(AppContext);
   const [messageModalOpen, setMessageModalOpen] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
 
@@ -28,9 +31,16 @@ const Users = () => {
   }, []);
 
   async function fetchData() {
+    let url = "";
+    if (user?.role === UserRole.ADMIN) {
+      url = "user";
+    } else if (user?.role === UserRole.MANAGER) {
+      url = "manager/referrals";
+    }
+
     try {
       setLoading(true);
-      const resp = await withCredentials((headers) => api.get(`user`, headers));
+      const resp = await withCredentials((headers) => api.get(url, headers));
       setAppState(resp.data);
     } catch (error) {
       console.log(error);
@@ -43,9 +53,11 @@ const Users = () => {
     try {
       setLoadingSendMessage(true);
       if (userId === "all") {
-        await withCredentials((headers) =>
-          api.post("admin/broadcast-message", { message }, headers)
-        );
+        let url = "admin/broadcast-message";
+        if (user?.role === UserRole.MANAGER) {
+          url = "manager/broadcast-message";
+        }
+        await withCredentials((headers) => api.post(url, { message }, headers));
       } else {
         await withCredentials((headers) =>
           api.post("admin/send-message", { user_id: userId, message }, headers)
@@ -101,14 +113,15 @@ const Users = () => {
     {
       title: "",
       key: "action",
-      render: (_, item) => (
-        <Space>
-          <Button onClick={() => navigate(item.id)}>Открыть</Button>
-          <Button onClick={() => setMessageModalOpen(item.id)}>
-            Сообщение
-          </Button>
-        </Space>
-      ),
+      render: (_, item) =>
+        user?.role === UserRole.ADMIN ? (
+          <Space>
+            <Button onClick={() => navigate(item.id)}>Открыть</Button>
+            <Button onClick={() => setMessageModalOpen(item.id)}>
+              Сообщение
+            </Button>
+          </Space>
+        ) : null,
     },
   ];
 

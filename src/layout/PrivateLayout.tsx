@@ -1,10 +1,12 @@
 import { Button, Layout, Menu, Space, Spin, notification, theme } from "antd";
 import { useNavigate } from "react-router-dom";
 
-import { menuItems } from "../constants/menuItems";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { adminMenuItems, managerMenuItems } from "../constants/menuItems";
+import { AppContext } from "../context/AppContext";
+import { User, UserRole } from "../routes/types";
+import { api, withCredentials } from "../services/api";
 import { createSocket } from "../services/socketService";
-import { api } from "../services/api";
 
 type Props = {
   children: React.ReactNode;
@@ -13,7 +15,11 @@ type Props = {
 const { Content, Footer, Sider } = Layout;
 
 const PrivateLayout = ({ children }: Props) => {
-  const socket = createSocket(localStorage.getItem("accessToken"));
+  const [user, setUser] = useState<User | null>(null);
+  const socket = useMemo(
+    () => createSocket(localStorage.getItem("accessToken")),
+    []
+  );
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const {
@@ -67,11 +73,12 @@ const PrivateLayout = ({ children }: Props) => {
     }
 
     try {
-      await api.get("user/profile", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+      console.log(localStorage.getItem("accessToken"));
+      
+      const resp = await withCredentials((headers) =>
+        api.get("user/profile", headers)
+      );
+      setUser(resp.data);
       setLoading(false);
     } catch (err) {
       console.log(err);
@@ -97,6 +104,18 @@ const PrivateLayout = ({ children }: Props) => {
     navigate("/login");
   }
 
+  const menuItems = useMemo(() => {
+    if (!user) return [];
+    const role = user.role;
+    let tmpItems = [];
+    if (role === UserRole.ADMIN) {
+      tmpItems = adminMenuItems;
+    } else if (role === UserRole.MANAGER) {
+      tmpItems = managerMenuItems;
+    }
+    return tmpItems;
+  }, [user]);
+
   if (loading) {
     return (
       <Space style={{ justifyContent: "center" }}>
@@ -106,35 +125,37 @@ const PrivateLayout = ({ children }: Props) => {
   }
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Content style={{ padding: "48px" }}>
-        <Layout
-          style={{
-            padding: "24px 0",
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-          }}
-        >
-          <Sider style={{ background: colorBgContainer }} width={250}>
-            <Menu
-              mode="inline"
-              defaultSelectedKeys={["1"]}
-              defaultOpenKeys={["sub1"]}
-              style={{ height: "100%" }}
-              items={menuItems}
-              onClick={onClick}
-            />
-          </Sider>
-          <Content style={{ padding: "0 24px", minHeight: 280 }}>
-            {contextHolder}
-            {children}
-          </Content>
-        </Layout>
-      </Content>
-      <Footer style={{ textAlign: "center" }}>
-        <Button onClick={handleLogout}>Выйти</Button>
-      </Footer>
-    </Layout>
+    <AppContext.Provider value={{ user }}>
+      <Layout style={{ minHeight: "100vh" }}>
+        <Content style={{ padding: "48px" }}>
+          <Layout
+            style={{
+              padding: "24px 0",
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+            }}
+          >
+            <Sider style={{ background: colorBgContainer }} width={250}>
+              <Menu
+                mode="inline"
+                defaultSelectedKeys={["1"]}
+                defaultOpenKeys={["sub1"]}
+                style={{ height: "100%" }}
+                items={menuItems}
+                onClick={onClick}
+              />
+            </Sider>
+            <Content style={{ padding: "0 24px", minHeight: 280 }}>
+              {contextHolder}
+              {children}
+            </Content>
+          </Layout>
+        </Content>
+        <Footer style={{ textAlign: "center" }}>
+          <Button onClick={handleLogout}>Выйти</Button>
+        </Footer>
+      </Layout>
+    </AppContext.Provider>
   );
 };
 

@@ -1,11 +1,14 @@
 import { App, Button, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
+import { AppContext } from "../context/AppContext";
+import { UserRole } from "../routes/types";
 const { Text } = Typography;
 
 const IncomingTransactions = () => {
+  const { user } = useContext(AppContext);
   const [appState, setAppState] = useState();
 
   useEffect(() => {
@@ -13,10 +16,15 @@ const IncomingTransactions = () => {
   }, []);
 
   async function fetchData() {
+    let url = "";
+    if (user?.role === UserRole.ADMIN) {
+      url = "admin/transactions";
+    } else if (user?.role === UserRole.MANAGER) {
+      url = "manager/transactions";
+    }
+
     try {
-      const resp = await withCredentials((headers) =>
-        api.get("admin/transactions", headers)
-      );
+      const resp = await withCredentials((headers) => api.get(url, headers));
       setAppState(resp.data.data);
     } catch (error) {
       console.log(error);
@@ -95,6 +103,9 @@ const IncomingTransactions = () => {
       title: "Action",
       key: "action",
       render: (_, item) => {
+        // не показывать кнопки менеджерам
+        if (user?.role !== UserRole.ADMIN) return null;
+
         if (item.type === "bank" && item.status === "pending") {
           return (
             <Button onClick={() => confirmTransaction(item.id)}>

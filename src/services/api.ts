@@ -17,14 +17,6 @@ const createApi = async (): Promise<AxiosInstance> => {
     }
   }
 
-  api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    return config;
-  });
-
   return api;
 };
 
