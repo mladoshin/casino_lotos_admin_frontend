@@ -1,13 +1,13 @@
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input, Typography } from "antd";
 import { useState } from "react";
-import { api } from "../services/api";
+import { api, withCredentials } from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 const { Text, Title, Link } = Typography;
 
 function LoginPage() {
-    const navigate = useNavigate()
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -17,7 +17,7 @@ function LoginPage() {
       const tokens = resp.data.tokens;
       localStorage.setItem("accessToken", tokens.accessToken);
       sessionStorage.setItem("refreshToken", tokens.refreshToken);
-      navigate('/games')
+      navigate("/games");
     } catch (error) {
       console.log(error);
     }

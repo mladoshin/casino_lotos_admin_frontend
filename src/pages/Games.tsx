@@ -1,9 +1,8 @@
-import { App, Avatar, Button, Table, Tag, Typography } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
-import { useEffect, useState } from 'react';
-import { api } from '../services/api';
+import { App, Avatar, Button, Table, Tag, Typography } from "antd";
+import type { ColumnsType } from "antd/es/table";
+import { useEffect, useState } from "react";
+import { api, withCredentials } from "../services/api";
 const { Text } = Typography;
-
 
 const Games = () => {
   const [appState, setAppState] = useState();
@@ -12,57 +11,66 @@ const Games = () => {
   const openNotification = () => {
     notification.info({
       message: `Игра недоступна`,
-      placement: 'topRight',
+      placement: "topRight",
     });
   };
 
   useEffect(() => {
-    api.get("games").then((resp) => {
-      const allPersons = resp.data;
-      setAppState(allPersons);
-    });
+    fetchData();
   }, []);
 
+  async function fetchData() {
+    try {
+      const resp = await withCredentials((headers) =>
+        api.get("games", headers)
+      );
+      setAppState(resp.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const openGame = (id: number) => {
     setLoading(true);
-  }
+  };
 
   const columns: ColumnsType<any> = [
     {
-      title: 'Название',
-      dataIndex: 'img',
-      key: 'img',
+      title: "Название",
+      dataIndex: "img",
+      key: "img",
       render: (src) => <Avatar src={src} shape="square" size={64} />,
     },
     {
-      title: 'Название',
-      dataIndex: 'name',
-      key: 'name',
+      title: "Название",
+      dataIndex: "name",
+      key: "name",
       render: (text) => <Text>{text}</Text>,
     },
     {
-      title: 'Категории',
-      key: 'categories',
-      dataIndex: 'categories',
-      render: (_, { categories }) => (
-        <Tag color={'green'}>
-          {categories}
-        </Tag>
-      ),
+      title: "Категории",
+      key: "categories",
+      dataIndex: "categories",
+      render: (_, { categories }) => <Tag color={"green"}>{categories}</Tag>,
     },
     {
-      title: 'Action',
-      key: 'action',
+      title: "Action",
+      key: "action",
       render: (_, item) => (
-        <Button onClick={() => openGame(item.id)} loading={loading}>Запросить ссылку на игру</Button>
+        <Button onClick={() => openGame(item.id)} loading={loading}>
+          Запросить ссылку на игру
+        </Button>
       ),
     },
   ];
 
   return (
-    <Table columns={columns} dataSource={appState} rowKey={meditation => meditation.id} />
-  )
-}
+    <Table
+      columns={columns}
+      dataSource={appState}
+      rowKey={(meditation) => meditation.id}
+    />
+  );
+};
 
-export default Games
+export default Games;

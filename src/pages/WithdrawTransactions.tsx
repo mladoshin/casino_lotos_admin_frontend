@@ -1,7 +1,7 @@
 import { Button, Space, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
-import { api } from "../services/api";
+import { api, withCredentials } from "../services/api";
 const { Text } = Typography;
 
 const WithdrawTransactions = () => {
@@ -12,22 +12,39 @@ const WithdrawTransactions = () => {
   }, []);
 
   async function fetchData() {
-    api.get("admin/withdraw-history").then((resp) => {
+    try {
+      const resp = await withCredentials((headers) =>
+        api.get("admin/withdraw-history", headers)
+      );
       setAppState(resp.data.data);
-    });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async function confirmWithdraw(transactionId: string) {
-    await api.post("admin/confirm-withdraw", {
-      withdraw_transaction_id: transactionId,
-    });
+    await withCredentials((headers) =>
+      api.post(
+        "admin/confirm-withdraw",
+        {
+          withdraw_transaction_id: transactionId,
+        },
+        headers
+      )
+    );
     await fetchData();
   }
 
   async function cancelWithdraw(transactionId: string) {
-    await api.post("admin/cancel-withdraw", {
-      withdraw_transaction_id: transactionId,
-    });
+    await withCredentials((headers) =>
+      api.post(
+        "admin/cancel-withdraw",
+        {
+          withdraw_transaction_id: transactionId,
+        },
+        headers
+      )
+    );
     await fetchData();
   }
 

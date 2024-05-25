@@ -5,12 +5,12 @@ import {
   Space,
   Table,
   Typography,
-  notification
+  notification,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../services/api";
+import { api, withCredentials } from "../services/api";
 const { Text } = Typography;
 
 const Users = () => {
@@ -30,11 +30,7 @@ const Users = () => {
   async function fetchData() {
     try {
       setLoading(true);
-      const resp = await api.get(`user`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+      const resp = await withCredentials((headers) => api.get(`user`, headers));
       setAppState(resp.data);
     } catch (error) {
       console.log(error);
@@ -47,24 +43,12 @@ const Users = () => {
     try {
       setLoadingSendMessage(true);
       if (userId === "all") {
-        await api.post(
-          "admin/broadcast-message",
-          { message },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
+        await withCredentials((headers) =>
+          api.post("admin/broadcast-message", { message }, headers)
         );
       } else {
-        await api.post(
-          "admin/send-message",
-          { user_id: userId, message },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-          }
+        await withCredentials((headers) =>
+          api.post("admin/send-message", { user_id: userId, message }, headers)
         );
       }
       setMessage("");

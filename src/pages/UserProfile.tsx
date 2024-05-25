@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { api } from "../services/api";
+import { api, withCredentials } from "../services/api";
 import { List } from "antd";
 
 function UserProfile() {
@@ -13,11 +13,9 @@ function UserProfile() {
 
   async function fetchData(id: string) {
     try {
-      const resp = await api.get(`admin/user-profile/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+      const resp = await withCredentials((headers) =>
+        api.get(`admin/user-profile/${id}`, headers)
+      );
       setUserProfile(resp.data);
     } catch (error) {
       console.log(error);

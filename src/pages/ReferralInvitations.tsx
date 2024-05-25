@@ -9,7 +9,7 @@ import {
   Typography,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { api } from "../services/api";
+import { api, withCredentials } from "../services/api";
 import { ColumnsType } from "antd/es/table";
 const { Text } = Typography;
 import { DeleteOutlined } from "@ant-design/icons";
@@ -35,14 +35,8 @@ function ReferralInvitations() {
   async function handleCreateReferralInvitation(expireDate: string) {
     try {
       setLoadingCreateReferralInvitations(true);
-      await api.post(
-        "referral-invite",
-        { expire_date: expireDate },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
+      await withCredentials((headers) =>
+        api.post("referral-invite", { expire_date: expireDate }, headers)
       );
       handleModalClose();
       await fetchData();
@@ -61,11 +55,9 @@ function ReferralInvitations() {
   async function fetchData() {
     try {
       setLoading(true);
-      const resp = await api.get(`referral-invite`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+      const resp = await withCredentials((headers) =>
+        api.get(`referral-invite`, headers)
+      );
       setReferralInvitations(resp.data.data);
     } catch (error) {
       console.log(error);
@@ -76,11 +68,9 @@ function ReferralInvitations() {
 
   async function handleDeleteReferralInvitation(id: string) {
     try {
-      await api.delete(`referral-invite/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+      await withCredentials((headers) =>
+        api.delete(`referral-invite/${id}`, headers)
+      );
       await fetchData();
     } catch (error) {
       console.log(error);

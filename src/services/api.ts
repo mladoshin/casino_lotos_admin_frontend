@@ -1,4 +1,9 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosRequestHeaders,
+  InternalAxiosRequestConfig,
+} from "axios";
 
 const createApi = async (): Promise<AxiosInstance> => {
   const api = axios.create({
@@ -24,3 +29,18 @@ const createApi = async (): Promise<AxiosInstance> => {
 };
 
 export const api = await createApi();
+
+export const withCredentials = async (
+  axiosRequest: (headers: AxiosRequestConfig<any>) => Promise<any>
+) => {
+  const token = localStorage.getItem("accessToken");
+  const headers = token
+    ? {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    : {};
+
+  return await axiosRequest(headers);
+};

@@ -1,6 +1,6 @@
 import { Button, Input, Modal, Space, Table, Typography } from "antd";
 import React, { useEffect, useState } from "react";
-import { api } from "../services/api";
+import { api, withCredentials } from "../services/api";
 import { ColumnsType } from "antd/es/table";
 const { Text } = Typography;
 import { DeleteOutlined } from "@ant-design/icons";
@@ -20,14 +20,8 @@ function Managers() {
   async function handleCreateManager(email: string, password: string) {
     try {
       setLoadingCreateManager(true);
-      await api.post(
-        "admin/create-manager",
-        { email, password },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-        }
+      await withCredentials((headers) =>
+        api.post("admin/create-manager", { email, password }, headers)
       );
       handleModalClose();
       await fetchData();
@@ -47,11 +41,9 @@ function Managers() {
   async function fetchData() {
     try {
       setLoading(true);
-      const resp = await api.get(`admin/managers`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+      const resp = await withCredentials((headers) =>
+        api.get(`admin/managers`, headers)
+      );
       setManagers(resp.data.data);
     } catch (error) {
       console.log(error);

@@ -1,14 +1,8 @@
-import {
-    Button,
-    Space,
-    Table,
-    Typography,
-    notification
-} from "antd";
+import { Button, Space, Table, Typography, notification } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { api } from "../services/api";
+import { api, withCredentials } from "../services/api";
 const { Text } = Typography;
 
 const Notifications = () => {
@@ -27,7 +21,9 @@ const Notifications = () => {
   async function fetchData() {
     try {
       setLoading(true);
-      const resp = await api.get(`user/notifications`);
+      const resp = await withCredentials((headers) =>
+        api.get(`user/notifications`, headers)
+      );
       setNotifications(resp.data.data);
     } catch (error) {
       console.log(error);
@@ -39,7 +35,9 @@ const Notifications = () => {
   async function handleClearNotification(notificationId: string) {
     try {
       setLoadingClearNotifications(notificationId);
-      await api.delete(`user/notifications/${notificationId}`);
+      await withCredentials((headers) =>
+        api.delete(`user/notifications/${notificationId}`, headers)
+      );
       await fetchData();
     } catch (error) {
       console.log(error);
@@ -54,7 +52,9 @@ const Notifications = () => {
       title: "Дата",
       dataIndex: "timestamp",
       key: "timestamp",
-      render: (timestamp) => <Text>{moment(timestamp).format("D.MM.YYYY (H:mm:ss)")}</Text>,
+      render: (timestamp) => (
+        <Text>{moment(timestamp).format("D.MM.YYYY (H:mm:ss)")}</Text>
+      ),
     },
     {
       title: "Тип",

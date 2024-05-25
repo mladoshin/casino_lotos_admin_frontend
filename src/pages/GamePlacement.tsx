@@ -12,7 +12,7 @@ import {
 import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { GameCategories, GameCategory } from "../constants/common";
-import { api } from "../services/api";
+import { api, withCredentials } from "../services/api";
 import dragula from "dragula";
 const { Text } = Typography;
 
@@ -82,7 +82,9 @@ function GamePlacement() {
   async function fetchData(category: GameCategory) {
     try {
       setLoading(true);
-      const resp = await api.get(`games/${category}`);
+      const resp = await withCredentials((headers) =>
+        api.get(`games/${category}`, headers)
+      );
       setGames(resp.data);
     } catch (error) {
       console.log(error);
@@ -93,7 +95,12 @@ function GamePlacement() {
 
   async function handleDeleteGame(gamePlacementId: string) {
     try {
-      await api.delete(`admin/delete-game-from-category/${gamePlacementId}`);
+      await withCredentials((headers) =>
+        api.delete(
+          `admin/delete-game-from-category/${gamePlacementId}`,
+          headers
+        )
+      );
       await fetchData(category);
     } catch (error) {
       console.log(error);
@@ -106,11 +113,17 @@ function GamePlacement() {
     order: number
   ) {
     try {
-      await api.post(`admin/add-game-to-category`, {
-        category,
-        game_id: gameId,
-        order,
-      });
+      await withCredentials((headers) =>
+        api.post(
+          `admin/add-game-to-category`,
+          {
+            category,
+            game_id: gameId,
+            order,
+          },
+          headers
+        )
+      );
       handleModalClose();
       await fetchData(category);
     } catch (error) {

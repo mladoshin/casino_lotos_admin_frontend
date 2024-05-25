@@ -1,6 +1,6 @@
 import { Button, Input, List, Space } from "antd";
 import React, { useEffect, useState } from "react";
-import { api } from "../services/api";
+import { api, withCredentials } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
 function PaymentDetails() {
   const [data, setData] = useState<any>({});
@@ -10,12 +10,9 @@ function PaymentDetails() {
   }, []);
 
   async function fetchData() {
-    const resp = await api.get("/admin/payment-details", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
-    });
-    console.log(resp.data);
+    const resp = await withCredentials((headers) =>
+      api.get("/admin/payment-details", headers)
+    );
     setData(resp.data);
   }
 
@@ -33,7 +30,7 @@ function PaymentDetails() {
     setData(tmp);
   }
 
-  function handleCangeField(
+  function handleChangeField(
     type: "card" | "sbp",
     index: number,
     field: "bank" | "card" | "tel",
@@ -46,11 +43,9 @@ function PaymentDetails() {
 
   async function savePaymentDetails() {
     try {
-      await api.post("admin/payment-details", data, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+      await withCredentials((headers) =>
+        api.post("admin/payment-details", data, headers)
+      );
       await fetchData();
     } catch (error) {
       console.log(error);
@@ -70,7 +65,7 @@ function PaymentDetails() {
             <Input
               value={item.bank}
               onChange={(e) =>
-                handleCangeField("card", index, "bank", e.target.value)
+                handleChangeField("card", index, "bank", e.target.value)
               }
             />
 
@@ -78,7 +73,7 @@ function PaymentDetails() {
               style={{ marginLeft: 20 }}
               value={item.card}
               onChange={(e) =>
-                handleCangeField("card", index, "card", e.target.value)
+                handleChangeField("card", index, "card", e.target.value)
               }
             />
             <div style={{ marginLeft: 20 }}>
@@ -104,7 +99,7 @@ function PaymentDetails() {
             <Input
               value={item.bank}
               onChange={(e) =>
-                handleCangeField("sbp", index, "bank", e.target.value)
+                handleChangeField("sbp", index, "bank", e.target.value)
               }
             />
 
@@ -112,7 +107,7 @@ function PaymentDetails() {
               style={{ marginLeft: 20 }}
               value={item.tel}
               onChange={(e) =>
-                handleCangeField("sbp", index, "tel", e.target.value)
+                handleChangeField("sbp", index, "tel", e.target.value)
               }
             />
             <div style={{ marginLeft: 20 }}>

@@ -2,7 +2,7 @@ import { App, Button, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { api } from "../services/api";
+import { api, withCredentials } from "../services/api";
 const { Text } = Typography;
 
 const IncomingTransactions = () => {
@@ -13,15 +13,26 @@ const IncomingTransactions = () => {
   }, []);
 
   async function fetchData() {
-    api.get("admin/transactions").then((resp) => {
+    try {
+      const resp = await withCredentials((headers) =>
+        api.get("admin/transactions", headers)
+      );
       setAppState(resp.data.data);
-    });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async function confirmTransaction(transactionId: string) {
-    await api.post("admin/confirm-transaction", {
-      transaction_id: transactionId,
-    });
+    await withCredentials((headers) =>
+      api.post(
+        "admin/confirm-transaction",
+        {
+          transaction_id: transactionId,
+        },
+        headers
+      )
+    );
     await fetchData();
   }
 
