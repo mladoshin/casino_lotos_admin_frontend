@@ -38,6 +38,9 @@ const PrivateLayout = ({ children }: Props) => {
     validateUser();
 
     socket.on("connect", () => console.log("Connected"));
+    socket.on("connect_error", (err) => {
+      console.log(`connect_error due to ${err.message}`);
+    });
     socket.on("disconnect", () => console.log("Disconnected"));
     socket.on("admin-message", handleReceiveMessage);
     socket.on("payment.crypto.pending", handleReceiveMessage);
@@ -74,7 +77,7 @@ const PrivateLayout = ({ children }: Props) => {
 
     try {
       console.log(localStorage.getItem("accessToken"));
-      
+
       const resp = await withCredentials((headers) =>
         api.get("user/profile", headers)
       );
