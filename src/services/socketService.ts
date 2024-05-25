@@ -6,5 +6,6 @@ export const createSocket = (accessToken: string) => {
     auth: {
       token: accessToken,
     },
+    secure: true
   });
 };
