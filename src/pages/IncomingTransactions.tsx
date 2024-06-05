@@ -106,7 +106,7 @@ const IncomingTransactions = () => {
         // не показывать кнопки менеджерам
         if (user?.role !== UserRole.ADMIN) return null;
 
-        if (item.type === "bank" && item.status === "waiting_confirmation") {
+        if ((item.type === "bank" || item.type === "cashback")&& item.status === "waiting_confirmation") {
           return (
             <Button onClick={() => confirmTransaction(item.id)}>
               Подтвердить
