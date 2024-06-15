@@ -58,7 +58,7 @@ function ReferralInvitations() {
       const resp = await withCredentials((headers) =>
         api.get(`referral-invite`, headers)
       );
-      setReferralInvitations(resp.data.data);
+      setReferralInvitations(resp.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -104,9 +104,9 @@ function ReferralInvitations() {
     },
     {
       title: "Ссылка",
-      dataIndex: "id",
-      key: "id",
-      render: (id) => <Text>{id}</Text>,
+      dataIndex: "link",
+      key: "link",
+      render: (link) => <Text>{link}</Text>,
     },
     {
       title: "",
