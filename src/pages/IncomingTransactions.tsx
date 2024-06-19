@@ -90,6 +90,12 @@ const IncomingTransactions = () => {
       dataIndex: "method",
     },
     {
+      title: "Реквизиты получателя",
+      key: "recipient_payment_info",
+      dataIndex: "recipient_payment_info",
+      render: (text) => <Text>{text || '–'}</Text>,
+    },
+    {
       title: "Сумма",
       key: "amount",
       dataIndex: "amount",
