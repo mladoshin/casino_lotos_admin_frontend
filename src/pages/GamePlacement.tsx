@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { GameCategories, GameCategory } from "../constants/common";
 import { api, withCredentials } from "../services/api";
 import dragula from "dragula";
+import AddGamesToCategoryModal from "../components/AddGamesToCategoryModal";
 const { Text } = Typography;
 
 const getIndexInParent = (el) => Array.from(el.parentNode.children).indexOf(el);
@@ -113,30 +114,6 @@ function GamePlacement() {
     }
   }
 
-  async function handleAddGame(
-    category: GameCategory,
-    gameId: string,
-    order: number
-  ) {
-    try {
-      await withCredentials((headers) =>
-        api.post(
-          `admin/add-game-to-category`,
-          {
-            category,
-            game_id: gameId,
-            order,
-          },
-          headers
-        )
-      );
-      handleModalClose();
-      await fetchData(category);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   const columns: ColumnsType<any> = [
     {
       title: "",
@@ -223,35 +200,12 @@ function GamePlacement() {
         </Button>
       )}
 
-      <Modal
+      <AddGamesToCategoryModal
         open={isAddGameModalOpen}
-        title={`Добавить игру в категорию ${category}`}
-        onCancel={handleModalClose}
-        footer={[
-          <Button key="back" onClick={handleModalClose}>
-            Отменить
-          </Button>,
-          <Button
-            type="primary"
-            onClick={() => handleAddGame(category, gameId, order)}
-          >
-            Добавить
-          </Button>,
-        ]}
-      >
-        <Input
-          placeholder="Введите идентификатор игры"
-          value={gameId}
-          onChange={(e) => setGameId(e.target.value)}
-        />
-        <Input
-          style={{ marginTop: 10 }}
-          placeholder="Введите порядок игры"
-          value={order}
-          type="number"
-          onChange={(e) => setOrder(+e.target.value)}
-        />
-      </Modal>
+        onClose={handleModalClose}
+        category={category}
+        refetchData={() => fetchData(category)}
+      />
     </div>
   );
 }
