@@ -106,8 +106,8 @@ const Users = () => {
     },
     {
       title: "TG",
-      dataIndex: "telegram_id",
-      key: "telegram_id",
+      dataIndex: "telegram_username",
+      key: "telegram_username",
       render: (text) => <Text>{text}</Text>,
     },
     {
