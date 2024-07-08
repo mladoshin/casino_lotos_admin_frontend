@@ -10,11 +10,8 @@ import {
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
+import { depositModeOptions } from "../constants/common";
 
-const depositModeOptions = [
-  { label: "Ручной", value: "manual" },
-  { label: "Автоматический", value: "auto" },
-];
 
 type ConfigForm = {
   depositMode?: "manual" | "auto";

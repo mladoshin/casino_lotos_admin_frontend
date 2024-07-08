@@ -27,4 +27,7 @@ export const GameCategories = Object.entries(GameCategory).map(
   })
 );
 
-console.log(GameCategories)
+export const depositModeOptions = [
+  { label: "Ручной", value: "manual" },
+  { label: "Автоматический", value: "auto" },
+];

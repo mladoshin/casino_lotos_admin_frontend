@@ -1,8 +1,10 @@
-import { Button, Input, List, Space } from "antd";
-import React, { useEffect, useState } from "react";
+import { Button, Input, List, Select, Space } from "antd";
+import React, { useEffect, useMemo, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
 import { PaymentDetailType } from "../@types/enum/PaymentDetailType";
+import Table, { ColumnsType } from "antd/es/table";
+import { depositModeOptions } from "../constants/common";
 function PaymentDetails() {
   const [data, setData] = useState<any[]>([]);
   const visibleData = data.filter((el) => !el.id.includes("del-"));
@@ -23,6 +25,7 @@ function PaymentDetails() {
     tmp.push({
       bank: "",
       data: "",
+      mode: "manual",
       priority: 1,
       type,
       id: `new-${Date.now()}`,
@@ -45,7 +48,7 @@ function PaymentDetails() {
 
   function handleChangeField(
     id: string,
-    field: "data" | "priority" | "bank",
+    field: "data" | "priority" | "bank" | "mode",
     value: string | number
   ) {
     const index = data.findIndex((el) => el.id === id);
@@ -69,112 +72,120 @@ function PaymentDetails() {
     }
   }
 
+  const getColumns = (type: "card" | "sbp"): ColumnsType<any> => {
+    const dataLabel = type === "card" ? "Номер карты" : "Номер телефона";
+    const columns = [
+      {
+        title: "Название банка",
+        dataIndex: "bank",
+        key: "bank",
+        render: (_text, item) => (
+          <Input
+            value={item.bank}
+            onChange={(e) => handleChangeField(item.id, "bank", e.target.value)}
+          />
+        ),
+      },
+      {
+        title: dataLabel,
+        dataIndex: "data",
+        key: "data",
+        render: (_text, item) => (
+          <Input
+            value={item.data}
+            onChange={(e) => handleChangeField(item.id, "data", e.target.value)}
+          />
+        ),
+      },
+      {
+        title: "Метод оплаты",
+        dataIndex: "mode",
+        key: "mode",
+        render: (_text, item) => (
+          <Select
+            value={item.mode}
+            style={{ width: "200px" }}
+            options={depositModeOptions}
+            onSelect={(val) => handleChangeField(item.id, "mode", val)}
+          />
+        ),
+      },
+      {
+        title: "Приоритет",
+        dataIndex: "priority",
+        key: "priority",
+        render: (_text, item) => (
+          <Input
+            placeholder="Приоритет"
+            type="number"
+            max={10}
+            min={0}
+            value={item.priority}
+            onChange={(e) =>
+              handleChangeField(item.id, "priority", +e.target.value)
+            }
+          />
+        ),
+      },
+      {
+        title: "",
+        key: "action",
+        render: (_, item) => (
+          <div>
+            <Button
+              icon={<DeleteOutlined />}
+              danger
+              onClick={() => deleteItem(item.id)}
+            />
+          </div>
+        ),
+      },
+    ];
+
+    if (type === "sbp") {
+      columns.splice(2, 1);
+    }
+
+    return columns;
+  };
+
   return (
     <div>
-      <List
-        size="large"
-        header={<h3>Карты</h3>}
-        bordered
-        dataSource={visibleData?.filter(
-          (dataItem) => dataItem.type === PaymentDetailType.CARD
-        )}
-        footer={
-          <Button onClick={() => addItem(PaymentDetailType.CARD)}>
-            Добавить карту
-          </Button>
-        }
-        renderItem={(item: any, index) => (
-          <List.Item>
-            <Input
-              value={item.bank}
-              onChange={(e) =>
-                handleChangeField(item.id, "bank", e.target.value)
-              }
-            />
+      <div>
+        <h2>Банковские карты</h2>
+        <Table
+          style={{ maxWidth: 1000 }}
+          columns={getColumns("card")}
+          dataSource={visibleData?.filter(
+            (dataItem) => dataItem.type === PaymentDetailType.CARD
+          )}
+          rowKey={(item) => item.id}
+          pagination={false}
+          footer={() => (
+            <Button onClick={() => addItem(PaymentDetailType.CARD)}>
+              Добавить карту
+            </Button>
+          )}
+        />
+      </div>
 
-            <Input
-              style={{ marginLeft: 20 }}
-              value={item.data}
-              onChange={(e) =>
-                handleChangeField(item.id, "data", e.target.value)
-              }
-            />
-
-            <Input
-              placeholder="Приоритет"
-              type="number"
-              max={10}
-              min={0}
-              style={{ marginLeft: 20 }}
-              value={item.priority}
-              onChange={(e) =>
-                handleChangeField(item.id, "priority", +e.target.value)
-              }
-            />
-
-            <div style={{ marginLeft: 20 }}>
-              <Button
-                icon={<DeleteOutlined />}
-                danger
-                onClick={() => deleteItem(item.id)}
-              />
-            </div>
-          </List.Item>
-        )}
-      />
-
-      <List
-        style={{ marginTop: 50 }}
-        size="large"
-        header={<h3>СБП</h3>}
-        footer={
-          <Button onClick={() => addItem(PaymentDetailType.SBP)}>
-            Добавить СБП
-          </Button>
-        }
-        bordered
-        dataSource={visibleData?.filter(
-          (dataItem) => dataItem.type === PaymentDetailType.SBP
-        )}
-        renderItem={(item: any, index) => (
-          <List.Item>
-            <Input
-              value={item.bank}
-              onChange={(e) =>
-                handleChangeField(item.id, "bank", e.target.value)
-              }
-            />
-
-            <Input
-              style={{ marginLeft: 20 }}
-              value={item.data}
-              onChange={(e) =>
-                handleChangeField(item.id, "data", e.target.value)
-              }
-            />
-
-            <Input
-              placeholder="Приоритет"
-              type="number"
-              max={10}
-              min={0}
-              style={{ marginLeft: 20 }}
-              value={item.priority}
-              onChange={(e) =>
-                handleChangeField(item.id, "priority", +e.target.value)
-              }
-            />
-
-            <div style={{ marginLeft: 20 }}>
-              <Button
-                icon={<DeleteOutlined />}
-                danger
-                onClick={() => deleteItem(item.id)}
-              />
-            </div>
-          </List.Item>
-        )}
-      />
+      <div style={{ marginTop: 44 }}>
+        <h2>СБП</h2>
+        <Table
+          style={{ maxWidth: 1000 }}
+          columns={getColumns("sbp")}
+          dataSource={visibleData?.filter(
+            (dataItem) => dataItem.type === PaymentDetailType.SBP
+          )}
+          rowKey={(item) => item.id}
+          pagination={false}
+          footer={() => (
+            <Button onClick={() => addItem(PaymentDetailType.SBP)}>
+              Добавить СБП
+            </Button>
+          )}
+        />
+      </div>
 
       <Space
         style={{ width: "100%", justifyContent: "flex-end", marginTop: 50 }}
