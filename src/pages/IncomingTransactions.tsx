@@ -1,4 +1,4 @@
-import { App, Button, Table, Typography } from "antd";
+import { App, Button, Space, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
@@ -35,6 +35,19 @@ const IncomingTransactions = () => {
     await withCredentials((headers) =>
       api.post(
         "admin/confirm-transaction",
+        {
+          transaction_id: transactionId,
+        },
+        headers
+      )
+    );
+    await fetchData();
+  }
+
+  async function cancelTransaction(transactionId: string) {
+    await withCredentials((headers) =>
+      api.post(
+        "admin/cancel-transaction",
         {
           transaction_id: transactionId,
         },
@@ -93,7 +106,7 @@ const IncomingTransactions = () => {
       title: "Реквизиты получателя",
       key: "recipient_payment_info",
       dataIndex: "recipient_payment_info",
-      render: (text) => <Text>{text || '–'}</Text>,
+      render: (text) => <Text>{text || "–"}</Text>,
     },
     {
       title: "Сумма",
@@ -112,11 +125,19 @@ const IncomingTransactions = () => {
         // не показывать кнопки менеджерам
         if (user?.role !== UserRole.ADMIN) return null;
 
-        if ((item.type === "bank" || item.type === "cashback")&& item.status === "waiting_confirmation") {
+        if (
+          (item.type === "bank" || item.type === "cashback") &&
+          item.status === "waiting_confirmation"
+        ) {
           return (
-            <Button onClick={() => confirmTransaction(item.id)}>
-              Подтвердить
-            </Button>
+            <Space>
+              <Button onClick={() => confirmTransaction(item.id)}>
+                Подтвердить
+              </Button>
+              <Button onClick={() => cancelTransaction(item.id)}>
+                Отклонить
+              </Button>
+            </Space>
           );
         } else if (item.type === "crypto" && item.status === "pending") {
           return (
