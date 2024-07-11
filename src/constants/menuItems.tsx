@@ -26,6 +26,8 @@ export const adminMenuItems: MenuProps["items"] = [
     getItem("Менеджеры", "/managers"),
     getItem("Заявки на вывод", "/withdraw-transactions"),
     getItem("Пополнения", "/incoming-transactions"),
+    getItem("Финансовая статистика", "/financial-stats"),
+
   ]),
   getItem("Игры", "sub2", <UsergroupAddOutlined />, [
     getItem("Список игр", "/games"),
@@ -46,6 +48,7 @@ export const managerMenuItems: MenuProps["items"] = [
     getItem("Заявки на вывод", "/withdraw-transactions"),
     getItem("Пополнения", "/incoming-transactions"),
     getItem("Реферальные ссылки", "/referral-invitations"),
+    getItem("Финансовая статистика", "/financial-stats"),
   ]),
   getItem("Игры", "sub2", <UsergroupAddOutlined />, [
     getItem("Список игр", "/games"),

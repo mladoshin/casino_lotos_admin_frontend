@@ -13,6 +13,7 @@ import ReferralInvitations from "./pages/ReferralInvitations";
 import GamePlacement from "./pages/GamePlacement";
 import LoginPage from "./pages/LoginPage";
 import CasinoConfig from "./pages/CasinoConfig";
+import FinancialStatsPage from "./pages/FinancialStatsPage";
 
 export default () => {
   return (
@@ -32,6 +33,8 @@ export default () => {
           />
           <Route path="/payment-details" element={<PaymentDetails />} />
           <Route path="/casino-config" element={<CasinoConfig />} />
+          <Route path="/financial-stats" element={<FinancialStatsPage />} />
+
 
           <Route path="/notifications" element={<Notifications />} />
 
