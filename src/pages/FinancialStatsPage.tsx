@@ -136,6 +136,13 @@ function FinancialStatsPage() {
       render: (text) => <Text>{text} руб</Text>,
       sorter: (a, b) => a.profit - b.profit,
     },
+    {
+      title: "Кэшбэк",
+      dataIndex: "cashback_amount",
+      key: "cashback_amount",
+      render: (text) => <Text>{text} руб</Text>,
+      sorter: (a, b) => a.cashback_amount - b.cashback_amount,
+    },
   ];
 
   return (
@@ -160,7 +167,9 @@ function FinancialStatsPage() {
           onClear={() => setSelectedUserId(null)}
         />
         <RangePicker
-          showTime
+          showTime={{
+            defaultOpenValue: [dayjs().startOf("day"), dayjs().endOf("day")],
+          }}
           value={
             dateRange[0]
               ? [dayjs(dateRange[0]), dayjs(dateRange[1])]
@@ -177,7 +186,56 @@ function FinancialStatsPage() {
         />
       </Space>
       <div style={{ marginTop: 24 }}>
-        <Table dataSource={data} columns={columns} />
+        <Table
+          dataSource={data}
+          columns={columns}
+          summary={(pageData) => {
+            let totalDeposit = 0;
+            let totalWithrawal = 0;
+            let totalProfit = 0;
+            let totalCashback = 0;
+            console.log(pageData);
+
+            pageData.forEach(
+              ({
+                deposit_amount,
+                withdraw_amount,
+                profit,
+                cashback_amount,
+              }) => {
+                totalDeposit += deposit_amount;
+                totalWithrawal += withdraw_amount;
+                totalProfit += profit;
+                totalCashback += cashback_amount;
+              }
+            );
+
+            return (
+              <>
+                <Table.Summary.Row style={{ background: "#f5f5f5" }}>
+                  <Table.Summary.Cell index={0}>
+                    <b>Сумма</b>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={1}></Table.Summary.Cell>
+                  <Table.Summary.Cell index={2}></Table.Summary.Cell>
+                  <Table.Summary.Cell index={3}></Table.Summary.Cell>
+                  <Table.Summary.Cell index={4}>
+                    <Text strong>{totalDeposit}</Text>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={5}>
+                    <Text strong>{totalWithrawal}</Text>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={6}>
+                    <Text strong>{totalProfit}</Text>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={7}>
+                    <Text strong>{totalCashback}</Text>
+                  </Table.Summary.Cell>
+                </Table.Summary.Row>
+              </>
+            );
+          }}
+        />
       </div>
     </div>
   );
