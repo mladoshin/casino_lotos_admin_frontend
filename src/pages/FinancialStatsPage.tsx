@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 
 function FinancialStatsPage() {
   const { user } = useContext(AppContext);
-  const [data, setData] = useState<null | any[]>(null);
+  const [data, setData] = useState<null | { result: any; total: any }>(null);
   const [selectedUserId, setSelectedUserId] = useState<null | string>(null);
   const [loading, _setLoading] = useState({
     users: false,
@@ -187,54 +187,32 @@ function FinancialStatsPage() {
       </Space>
       <div style={{ marginTop: 24 }}>
         <Table
-          dataSource={data}
+          dataSource={data?.result || []}
           columns={columns}
-          summary={(pageData) => {
-            let totalDeposit = 0;
-            let totalWithrawal = 0;
-            let totalProfit = 0;
-            let totalCashback = 0;
-            console.log(pageData);
-
-            pageData.forEach(
-              ({
-                deposit_amount,
-                withdraw_amount,
-                profit,
-                cashback_amount,
-              }) => {
-                totalDeposit += deposit_amount;
-                totalWithrawal += withdraw_amount;
-                totalProfit += profit;
-                totalCashback += cashback_amount;
-              }
-            );
-
-            return (
-              <>
-                <Table.Summary.Row style={{ background: "#f5f5f5" }}>
-                  <Table.Summary.Cell index={0}>
-                    <b>Сумма</b>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell index={1}></Table.Summary.Cell>
-                  <Table.Summary.Cell index={2}></Table.Summary.Cell>
-                  <Table.Summary.Cell index={3}></Table.Summary.Cell>
-                  <Table.Summary.Cell index={4}>
-                    <Text strong>{totalDeposit}</Text>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell index={5}>
-                    <Text strong>{totalWithrawal}</Text>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell index={6}>
-                    <Text strong>{totalProfit}</Text>
-                  </Table.Summary.Cell>
-                  <Table.Summary.Cell index={7}>
-                    <Text strong>{totalCashback}</Text>
-                  </Table.Summary.Cell>
-                </Table.Summary.Row>
-              </>
-            );
-          }}
+          summary={(_data) => data && (
+            <>
+              <Table.Summary.Row style={{ background: "#f5f5f5" }}>
+                <Table.Summary.Cell index={0}>
+                  <b>Сумма</b>
+                </Table.Summary.Cell>
+                <Table.Summary.Cell index={1}></Table.Summary.Cell>
+                <Table.Summary.Cell index={2}></Table.Summary.Cell>
+                <Table.Summary.Cell index={3}></Table.Summary.Cell>
+                <Table.Summary.Cell index={4}>
+                  <Text strong>{data?.total.totalDeposit}</Text>
+                </Table.Summary.Cell>
+                <Table.Summary.Cell index={5}>
+                  <Text strong>{data.total.totalWithrawal}</Text>
+                </Table.Summary.Cell>
+                <Table.Summary.Cell index={6}>
+                  <Text strong>{data.total.totalProfit}</Text>
+                </Table.Summary.Cell>
+                <Table.Summary.Cell index={7}>
+                  <Text strong>{data.total.totalCashback}</Text>
+                </Table.Summary.Cell>
+              </Table.Summary.Row>
+            </>
+          )}
         />
       </div>
     </div>
