@@ -57,33 +57,12 @@ const IncomingTransactions = () => {
     await fetchData();
   }
 
-  /*
-            "id": "d810b617-671d-4c99-9c58-ac7459d5000d",
-            "invoice_id": "INV-1BAZX8G5",
-            "timestamp": "2024-05-07T20:02:46.238Z",
-            "type": "crypto",
-            "method": "crypto",
-            "amount": 100,
-            "status": "pending"
-  */
   const columns: ColumnsType<any> = [
-    {
-      title: "Id",
-      dataIndex: "id",
-      key: "id",
-      render: (text) => <Text>{text}</Text>,
-    },
-    {
-      title: "Invoice Id",
-      dataIndex: "invoice_id",
-      key: "invoice_id",
-      render: (text) => <Text>{text}</Text>,
-    },
     {
       title: "Пользователь",
       key: "user",
       dataIndex: "user",
-      render: (user) => <Text>{user?.email}</Text>,
+      render: (user) => <Text>{user?.email || user?.telegram_username || user?.phone}</Text>,
     },
     {
       title: "Дата создания",

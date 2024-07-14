@@ -56,24 +56,12 @@ const WithdrawTransactions = () => {
     await fetchData();
   }
 
-  /*
-      "id": "string",
-      "user": "string",
-      "timestamp": "2024-05-16T21:52:17.945Z",
-      "amount": 0,
-      "status": "success"
-  */
   const columns: ColumnsType<any> = [
-    {
-      title: "Id",
-      dataIndex: "id",
-      key: "id",
-    },
     {
       title: "Пользователь",
       dataIndex: "user",
       key: "user",
-      render: (user) => <Text>{user.email}</Text>,
+      render: (user) => <Text>{user.email || user.telegram_username || user.phone}</Text>,
     },
     {
       title: "Дата создания",
