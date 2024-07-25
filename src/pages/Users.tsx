@@ -84,7 +84,7 @@ const Users = () => {
       title: "Баланс",
       dataIndex: "balance",
       key: "balance",
-      render: (text) => <Text>{text}</Text>,
+      render: (text) => <Text>{text.toFixed(2)}</Text>,
     },
     {
       title: "Всего заработано",
@@ -92,7 +92,7 @@ const Users = () => {
       key: "totalEarned",
       render: (_t, item) => (
         <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
-          {item.lastTotalEarned}/{item.totalEarned}
+          {item.lastTotalEarned.toFixed(2)}/{item.totalEarned.toFixed(2)}
         </Text>
       ),
     },
@@ -102,7 +102,7 @@ const Users = () => {
       key: "totalEarned",
       render: (_t, item) => (
         <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
-          {item.lastTotalLoss}/{item.totalLoss}
+          {item.lastTotalLoss.toFixed(2)}/{item.totalLoss.toFixed(2)}
         </Text>
       ),
     },
@@ -116,7 +116,7 @@ const Users = () => {
         }
         return (
           <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
-            {rtpValue !== null ? `${rtpValue}%` : ""}
+            {rtpValue !== null ? `${Math.round(rtpValue)}%` : ""}
           </Text>
         );
       },
