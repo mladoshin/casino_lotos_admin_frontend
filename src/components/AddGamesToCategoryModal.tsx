@@ -12,6 +12,7 @@ import { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import useDebounce from "../hooks/useDebounce";
 import { api, withCredentials } from "../services/api";
+import { TableRowSelection } from "antd/es/table/interface";
 // import Table, { ColumnsType } from "antd/es/table";
 const { Search } = Input;
 const { Text } = Typography;
@@ -29,19 +30,15 @@ function AddGamesToCategoryModal({
   onClose,
   refetchData,
 }: AddGamesToCategoryModalProps) {
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 250);
   const [games, setGames] = useState([]);
   const [filteredGamesByName, setFilteredGamesByName] = useState(games);
-  const [selectedGameIds, setSelectedGameIds] = useState<
-    Record<string, boolean>
-  >({});
   const [isFetchGamesLoading, setIsFetchGamesLoading] = useState(false);
   const [isAddGamesLoading, setIsAddGamesLoading] = useState(false);
 
-  const selectedGamesCount = Object.values(selectedGameIds).filter(
-    (el) => el
-  ).length;
+  const selectedGamesCount = selectedRowKeys.length;
 
   const [gameProviders, setGameProviders] = useState<string[]>([]);
 
@@ -51,7 +48,7 @@ function AddGamesToCategoryModal({
 
   useEffect(() => {
     if (!open) {
-      setSelectedGameIds({});
+      setSelectedRowKeys([]);
       setSearch("");
     }
   }, [open]);
@@ -90,9 +87,10 @@ function AddGamesToCategoryModal({
   }
 
   async function handleAddGames() {
-    const games = Object.keys(selectedGameIds)
-      .filter((key) => selectedGameIds[key])
-      .map((gameId, idx) => ({ game_id: gameId, order: idx }));
+    const games = selectedRowKeys.map((gameId, idx) => ({
+      game_id: gameId,
+      order: idx,
+    }));
 
     try {
       setIsAddGamesLoading(true);
@@ -108,21 +106,7 @@ function AddGamesToCategoryModal({
     setIsAddGamesLoading(false);
   }
 
-  function handleToggleCheck(checked: boolean, gameId: string) {
-    setSelectedGameIds((current) => ({ ...current, [gameId]: checked }));
-  }
-
   const columns: ColumnsType<any> = [
-    {
-      title: "Выбрать",
-      key: "action",
-      render: (_, item) => (
-        <Checkbox
-          checked={selectedGameIds[item.id]}
-          onChange={(e) => handleToggleCheck(e.target.checked, item.id)}
-        />
-      ),
-    },
     {
       title: "",
       dataIndex: "img",
@@ -153,6 +137,21 @@ function AddGamesToCategoryModal({
       render: (_, { categories }) => <Tag color={"green"}>{categories}</Tag>,
     },
   ];
+
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const rowSelection: TableRowSelection<any> = {
+    selectedRowKeys,
+    selections: [
+      Table.SELECTION_ALL,
+      Table.SELECTION_INVERT,
+      Table.SELECTION_NONE,
+    ],
+    onChange: onSelectChange,
+  };
 
   return (
     <Modal
@@ -197,6 +196,7 @@ function AddGamesToCategoryModal({
         dataSource={filteredGamesByName}
         scroll={{ y: "60vh" }}
         rowKey={(game) => game.id}
+        rowSelection={rowSelection}
       />
     </Modal>
   );
