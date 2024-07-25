@@ -12,11 +12,11 @@ import React, { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { depositModeOptions } from "../constants/common";
 
-
 type ConfigForm = {
   depositMode?: "manual" | "auto";
   deleteExpiredDepositSessions?: boolean;
   depositSessionDuration?: number;
+  currentDomain?: string;
 };
 
 function CasinoConfig() {
@@ -76,7 +76,7 @@ function CasinoConfig() {
         //onFinish={onFinish}
         autoComplete="off"
       >
-        <Form.Item
+        {/* <Form.Item
           label="Тип пополнений"
           name="depositMode"
           initialValue={form.depositMode}
@@ -84,6 +84,18 @@ function CasinoConfig() {
           <Select
             options={depositModeOptions}
             onSelect={(val) => handleChangeFormField("depositMode", val)}
+          />
+        </Form.Item> */}
+
+        <Form.Item
+          label="Рабочий домен"
+          name="currentDomain"
+          initialValue={form.currentDomain}
+        >
+          <Input
+            onChange={(e) =>
+              handleChangeFormField("currentDomain", e.target.value)
+            }
           />
         </Form.Item>
 
