@@ -87,10 +87,39 @@ const Users = () => {
       render: (text) => <Text>{text}</Text>,
     },
     {
-      title: "Заработано",
-      dataIndex: "earned",
-      key: "earned",
-      render: (text) => <Text>{text}</Text>,
+      title: "Всего заработано",
+      dataIndex: "totalEarned",
+      key: "totalEarned",
+      render: (_t, item) => (
+        <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
+          {item.lastTotalEarned}/{item.totalEarned}
+        </Text>
+      ),
+    },
+    {
+      title: "Всего проиграно",
+      dataIndex: "totalLoss",
+      key: "totalEarned",
+      render: (_t, item) => (
+        <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
+          {item.lastTotalLoss}/{item.totalLoss}
+        </Text>
+      ),
+    },
+    {
+      title: "RTP",
+      key: "rtp",
+      render: (_t, item) => {
+        let rtpValue = null;
+        if (item.totalLoss !== 0) {
+          rtpValue = (item.totalEarned / item.totalLoss) * 100;
+        }
+        return (
+          <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
+            {rtpValue !== null ? `${rtpValue}%` : ""}
+          </Text>
+        );
+      },
     },
     {
       title: "Номер телефона",
