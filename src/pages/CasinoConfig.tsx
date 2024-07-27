@@ -1,16 +1,13 @@
 import {
   Button,
-  Checkbox,
   Form,
   Input,
-  Select,
   Space,
   Spin,
-  Switch,
+  Switch
 } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
-import { depositModeOptions } from "../constants/common";
 
 type ConfigForm = {
   depositMode?: "manual" | "auto";

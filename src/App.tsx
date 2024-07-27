@@ -14,6 +14,7 @@ import GamePlacement from "./pages/GamePlacement";
 import LoginPage from "./pages/LoginPage";
 import CasinoConfig from "./pages/CasinoConfig";
 import FinancialStatsPage from "./pages/FinancialStatsPage";
+import AccountPage from "./pages/AccountPage";
 
 export default () => {
   return (
@@ -39,6 +40,8 @@ export default () => {
           <Route path="/notifications" element={<Notifications />} />
 
           <Route path="/users" element={<Users />} />
+          <Route path="/account" element={<AccountPage />} />
+
           <Route path="/managers" element={<Managers />} />
           <Route
             path="/referral-invitations"

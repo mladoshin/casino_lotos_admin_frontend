@@ -36,8 +36,7 @@ export const adminMenuItems: MenuProps["items"] = [
   ]),
   getItem("Настройки", "sub3", <UsergroupAddOutlined />, [
     getItem("Реквизиты", "/payment-details"),
-    getItem("Конфигурация", "/casino-config"),
-
+    getItem("Аккаунт", "/account"),
   ]),
 ];
 
@@ -53,5 +52,8 @@ export const managerMenuItems: MenuProps["items"] = [
   getItem("Игры", "sub2", <UsergroupAddOutlined />, [
     getItem("Список игр", "/games"),
     getItem("История игр", "/gameHistory"),
+    getItem("Настройки", "sub3", <UsergroupAddOutlined />, [
+      getItem("Аккаунт", "/account"),
+    ]),
   ]),
 ];
