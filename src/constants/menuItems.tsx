@@ -37,6 +37,8 @@ export const adminMenuItems: MenuProps["items"] = [
   getItem("Настройки", "sub3", <UsergroupAddOutlined />, [
     getItem("Реквизиты", "/payment-details"),
     getItem("Аккаунт", "/account"),
+    getItem("Конфигурация", "/casino-config"),
+
   ]),
 ];
 
