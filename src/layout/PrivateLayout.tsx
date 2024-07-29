@@ -1,12 +1,12 @@
 import { Button, Layout, Menu, Space, Spin, notification, theme } from "antd";
 import { useNavigate } from "react-router-dom";
-
 import { useEffect, useMemo, useState } from "react";
 import { adminMenuItems, managerMenuItems } from "../constants/menuItems";
 import { AppContext } from "../context/AppContext";
-import { User, UserRole } from "../routes/types";
 import { api, withCredentials } from "../services/api";
 import { createSocket } from "../services/socketService";
+import { User } from "@customTypes/entity/User";
+import { UserRole } from "@customTypes/enum/UserRole";
 
 type Props = {
   children: React.ReactNode;

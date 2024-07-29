@@ -1,4 +1,4 @@
-import { User } from "@types/entity/User";
+import { User } from "@customTypes/entity/User";
 
 export function getUserLabel(user: User) {
   const primaryInfo =
