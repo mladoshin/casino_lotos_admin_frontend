@@ -76,6 +76,22 @@ const WithdrawTransactions = () => {
       dataIndex: "amount",
     },
     {
+      title: "Метод",
+      key: "method",
+      dataIndex: "method",
+    },
+    {
+      title: "Валюта",
+      key: "currency",
+      dataIndex: "currency",
+    },
+    {
+      title: "Реквизиты",
+      key: "currency",
+      render: (_text, item) => <Text>{item.card || item.sbp || item.crypto_address}</Text>,
+
+    },
+    {
       title: "Статус",
       key: "status",
       dataIndex: "status",
