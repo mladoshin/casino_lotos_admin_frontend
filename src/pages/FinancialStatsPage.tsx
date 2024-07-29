@@ -3,11 +3,12 @@ import { api, withCredentials } from "../services/api";
 import { AppContext } from "../context/AppContext";
 import { AutoComplete, Card, Select, Table, Typography } from "antd";
 import { DatePicker, Space } from "antd";
-import { UserRole } from "../@types/enum/UserRole";
+import { UserRole } from "../types/enum/UserRole";
 import { ColumnsType } from "antd/es/table";
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
 import dayjs from "dayjs";
+import { getUserTelegramLabel } from "@utils/user";
 
 function FinancialStatsPage() {
   const { user } = useContext(AppContext);
@@ -112,8 +113,8 @@ function FinancialStatsPage() {
     },
     {
       title: "Телеграм",
-      key: "cachback_amount",
-      render: (_text, item) => <Text>{item.user.telegram_username}</Text>,
+      key: "telegram",
+      render: (_text, item) => <Text>{getUserTelegramLabel(user)}</Text>,
     },
     {
       title: "Депозит",

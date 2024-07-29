@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { api, withCredentials } from "../services/api";
 import { AppContext } from "../context/AppContext";
 import { UserRole } from "../routes/types";
+import { getUserTelegramLabel } from "@utils/user";
 const { Text } = Typography;
 
 const Users = () => {
@@ -135,9 +136,8 @@ const Users = () => {
     },
     {
       title: "TG",
-      dataIndex: "telegram_username",
-      key: "telegram_username",
-      render: (text) => <Text>{text}</Text>,
+      key: "telegram",
+      render: (_text, item) => <Text>{getUserTelegramLabel(item)}</Text>,
     },
     {
       title: "",

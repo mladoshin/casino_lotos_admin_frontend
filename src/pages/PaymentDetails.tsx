@@ -2,7 +2,7 @@ import { Button, Input, List, Select, Space } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
-import { PaymentDetailType } from "../@types/enum/PaymentDetailType";
+import { PaymentDetailType } from "../types/enum/PaymentDetailType";
 import Table, { ColumnsType } from "antd/es/table";
 import { depositModeOptions } from "../constants/common";
 function PaymentDetails() {
