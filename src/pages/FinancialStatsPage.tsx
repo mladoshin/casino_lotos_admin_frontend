@@ -114,7 +114,7 @@ function FinancialStatsPage() {
     {
       title: "Телеграм",
       key: "telegram",
-      render: (_text, item) => <Text>{getUserTelegramLabel(user)}</Text>,
+      render: (_text, item) => <Text>{getUserTelegramLabel(item.user)}</Text>,
     },
     {
       title: "Депозит",
