@@ -41,7 +41,9 @@ function TransactionLogsPage() {
       dataIndex: "transaction_timestamp",
       key: "transaction_timestamp",
       render: (date) => (
-        <Text>{moment(date).format("DD.MM.YYYY (HH:mm:ss)")}</Text>
+        <Text>
+          {date ? moment(date).format("DD.MM.YYYY (HH:mm:ss)") : "N/A"}
+        </Text>
       ),
     },
     {
@@ -53,7 +55,11 @@ function TransactionLogsPage() {
         const hrs = moment.utc(endTime.diff(startTime)).format("HH");
         const min = moment.utc(endTime.diff(startTime)).format("mm");
         const sec = moment.utc(endTime.diff(startTime)).format("ss");
-        return <Text>{`${hrs}:${min}:${sec}`}</Text>;
+        return (
+          <Text>
+            {item.transaction_timestamp ? `${hrs}:${min}:${sec}` : "N/A"}
+          </Text>
+        );
       },
     },
     {
