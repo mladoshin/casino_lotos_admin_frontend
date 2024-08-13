@@ -4,7 +4,10 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { getUserLabel } from "@utils/user";
-import { transactionLogActionLabels, transactionLogTypeLabels } from "../constants/common";
+import {
+  transactionLogActionLabels,
+  transactionLogTypeLabels,
+} from "../constants/common";
 const { Text } = Typography;
 
 function TransactionLogsPage() {
@@ -26,19 +29,37 @@ function TransactionLogsPage() {
 
   const columns: ColumnsType<any> = [
     {
-      title: "Дата",
-      dataIndex: "date",
-      key: "date",
+      title: "Дата действия",
+      dataIndex: "timestamp",
+      key: "timestamp",
       render: (date) => (
-        <Text>{moment(date).format("D.MM.YYYY (H:mm:ss)")}</Text>
+        <Text>{moment(date).format("DD.MM.YYYY (HH:mm:ss)")}</Text>
       ),
+    },
+    {
+      title: "Дата подачи заявки",
+      dataIndex: "transaction_timestamp",
+      key: "transaction_timestamp",
+      render: (date) => (
+        <Text>{moment(date).format("DD.MM.YYYY (HH:mm:ss)")}</Text>
+      ),
+    },
+    {
+      title: "Время обработки заявки (hh:mm:ss)",
+      key: "processing_time",
+      render: (_t, item) => {
+        const startTime = moment(item.transaction_timestamp);
+        const endTime = moment(item.timestamp);
+        const hrs = moment.utc(endTime.diff(startTime)).format("HH");
+        const min = moment.utc(endTime.diff(startTime)).format("mm");
+        const sec = moment.utc(endTime.diff(startTime)).format("ss");
+        return <Text>{`${hrs}:${min}:${sec}`}</Text>;
+      },
     },
     {
       title: "Оператор",
       key: "manager",
-      render: (_t, item) => (
-        <Text>{getUserLabel(item.manager)}</Text>
-      ),
+      render: (_t, item) => <Text>{getUserLabel(item.manager)}</Text>,
     },
     {
       title: "Тип",
