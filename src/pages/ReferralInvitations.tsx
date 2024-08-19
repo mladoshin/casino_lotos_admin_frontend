@@ -87,14 +87,6 @@ function ReferralInvitations() {
       ),
     },
     {
-      title: "Действует до",
-      dataIndex: "expire_date",
-      key: "expire_date",
-      render: (timestamp) => (
-        <Text>{moment(timestamp).format("D.MM.YYYY")}</Text>
-      ),
-    },
-    {
       title: "Статус",
       dataIndex: "is_used",
       key: "is_used",
@@ -106,6 +98,12 @@ function ReferralInvitations() {
       title: "Ссылка",
       dataIndex: "link",
       key: "link",
+      render: (link) => <Text>{link}</Text>,
+    },
+    {
+      title: "ТГ Ссылка",
+      dataIndex: "tg_link",
+      key: "tg_link",
       render: (link) => <Text>{link}</Text>,
     },
     {

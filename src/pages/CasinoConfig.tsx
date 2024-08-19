@@ -14,6 +14,8 @@ type ConfigForm = {
   deleteExpiredDepositSessions?: boolean;
   depositSessionDuration?: number;
   currentDomain?: string;
+  currentCasinoBotDomain?: string;
+
 };
 
 function CasinoConfig() {
@@ -92,6 +94,18 @@ function CasinoConfig() {
           <Input
             onChange={(e) =>
               handleChangeFormField("currentDomain", e.target.value)
+            }
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Ссылка на игрового бота"
+          name="currentCasinoBotDomain"
+          initialValue={form.currentCasinoBotDomain}
+        >
+          <Input
+            onChange={(e) =>
+              handleChangeFormField("currentCasinoBotDomain", e.target.value)
             }
           />
         </Form.Item>
