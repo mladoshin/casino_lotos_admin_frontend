@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { api, withCredentials } from "../services/api";
 import { AppContext } from "../context/AppContext";
 import { UserRole } from "../routes/types";
+import { getUserTelegramLabel } from "@utils/user";
 const { Text } = Typography;
 
 const Users = () => {
@@ -84,13 +85,42 @@ const Users = () => {
       title: "Баланс",
       dataIndex: "balance",
       key: "balance",
-      render: (text) => <Text>{text}</Text>,
+      render: (text) => <Text>{text.toFixed(2)}</Text>,
     },
     {
-      title: "Заработано",
-      dataIndex: "earned",
-      key: "earned",
-      render: (text) => <Text>{text}</Text>,
+      title: "Всего заработано",
+      dataIndex: "totalEarned",
+      key: "totalEarned",
+      render: (_t, item) => (
+        <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
+          {item.lastTotalEarned.toFixed(2)}/{item.totalEarned.toFixed(2)}
+        </Text>
+      ),
+    },
+    {
+      title: "Всего проиграно",
+      dataIndex: "totalLoss",
+      key: "totalEarned",
+      render: (_t, item) => (
+        <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
+          {item.lastTotalLoss.toFixed(2)}/{item.totalLoss.toFixed(2)}
+        </Text>
+      ),
+    },
+    {
+      title: "RTP",
+      key: "rtp",
+      render: (_t, item) => {
+        let rtpValue = null;
+        if (item.totalLoss !== 0) {
+          rtpValue = (item.totalEarned / item.totalLoss) * 100;
+        }
+        return (
+          <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
+            {rtpValue !== null ? `${Math.round(rtpValue)}%` : ""}
+          </Text>
+        );
+      },
     },
     {
       title: "Номер телефона",
@@ -106,9 +136,8 @@ const Users = () => {
     },
     {
       title: "TG",
-      dataIndex: "telegram_username",
-      key: "telegram_username",
-      render: (text) => <Text>{text}</Text>,
+      key: "telegram",
+      render: (_text, item) => <Text>{getUserTelegramLabel(item)}</Text>,
     },
     {
       title: "",

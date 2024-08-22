@@ -1,10 +1,10 @@
 import { App, Button, Space, Table, Typography } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { AppContext } from "../context/AppContext";
 import { UserRole } from "../routes/types";
+import { getUserLabel } from "@utils/user";
 const { Text } = Typography;
 
 const IncomingTransactions = () => {
@@ -62,7 +62,7 @@ const IncomingTransactions = () => {
       title: "Пользователь",
       key: "user",
       dataIndex: "user",
-      render: (user) => <Text>{user?.email || user?.telegram_username || user?.phone}</Text>,
+      render: (user) => <Text>{getUserLabel(user)}</Text>,
     },
     {
       title: "Дата создания",
@@ -83,14 +83,19 @@ const IncomingTransactions = () => {
     },
     {
       title: "Реквизиты получателя",
-      key: "recipient_payment_info",
-      dataIndex: "recipient_payment_info",
-      render: (text) => <Text>{text || "–"}</Text>,
+      key: "payment_details",
+      dataIndex: "payment_details",
+      render: (paymentDetails) => <Text>{paymentDetails?.data}</Text>,
     },
     {
       title: "Сумма",
       key: "amount",
       dataIndex: "amount",
+    },
+    {
+      title: "Имя покупателя",
+      key: "sender_name",
+      dataIndex: "sender_name",
     },
     {
       title: "Статус",

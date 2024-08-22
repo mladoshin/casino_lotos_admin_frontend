@@ -2,11 +2,12 @@ import { Button, Input, List, Select, Space } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
-import { PaymentDetailType } from "../@types/enum/PaymentDetailType";
+import { PaymentDetailType } from "../types/enum/PaymentDetailType";
 import Table, { ColumnsType } from "antd/es/table";
 import { depositModeOptions } from "../constants/common";
 function PaymentDetails() {
   const [data, setData] = useState<any[]>([]);
+  const [error, setError] = useState("");
   const visibleData = data.filter((el) => !el.id.includes("del-"));
 
   useEffect(() => {
@@ -48,7 +49,7 @@ function PaymentDetails() {
 
   function handleChangeField(
     id: string,
-    field: "data" | "priority" | "bank" | "mode",
+    field: "data" | "recipient_name" | "bank" | "mode",
     value: string | number
   ) {
     const index = data.findIndex((el) => el.id === id);
@@ -63,12 +64,14 @@ function PaymentDetails() {
     // console.log(data);
     // return;
     try {
+      setError("");
       await withCredentials((headers) =>
         api.post("admin/payment-details", { data }, headers)
       );
       await fetchData();
     } catch (error) {
       console.log(error);
+      setError(error.message);
     }
   }
 
@@ -111,18 +114,15 @@ function PaymentDetails() {
         ),
       },
       {
-        title: "Приоритет",
-        dataIndex: "priority",
-        key: "priority",
+        title: "Имя получателя",
+        dataIndex: "recipient_name",
+        key: "recipient_name",
         render: (_text, item) => (
           <Input
-            placeholder="Приоритет"
-            type="number"
-            max={10}
-            min={0}
-            value={item.priority}
+            placeholder="Имя"
+            value={item.recipient_name}
             onChange={(e) =>
-              handleChangeField(item.id, "priority", +e.target.value)
+              handleChangeField(item.id, "recipient_name", e.target.value)
             }
           />
         ),

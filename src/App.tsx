@@ -14,6 +14,8 @@ import GamePlacement from "./pages/GamePlacement";
 import LoginPage from "./pages/LoginPage";
 import CasinoConfig from "./pages/CasinoConfig";
 import FinancialStatsPage from "./pages/FinancialStatsPage";
+import AccountPage from "./pages/AccountPage";
+import TransactionLogsPage from "./pages/TransactionLogsPage";
 
 export default () => {
   return (
@@ -34,11 +36,13 @@ export default () => {
           <Route path="/payment-details" element={<PaymentDetails />} />
           <Route path="/casino-config" element={<CasinoConfig />} />
           <Route path="/financial-stats" element={<FinancialStatsPage />} />
-
+          <Route path="/transaction-logs" element={<TransactionLogsPage/>}/>
 
           <Route path="/notifications" element={<Notifications />} />
 
           <Route path="/users" element={<Users />} />
+          <Route path="/account" element={<AccountPage />} />
+
           <Route path="/managers" element={<Managers />} />
           <Route
             path="/referral-invitations"

@@ -1,22 +1,22 @@
 import {
   Button,
-  Checkbox,
   Form,
   Input,
-  Select,
   Space,
   Spin,
-  Switch,
+  Switch
 } from "antd";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
-import { depositModeOptions } from "../constants/common";
-
 
 type ConfigForm = {
   depositMode?: "manual" | "auto";
   deleteExpiredDepositSessions?: boolean;
   depositSessionDuration?: number;
+  currentDomain?: string;
+  currentCasinoBotDomain?: string;
+  voyagerAmount?: number;
+  welcomeBonus?: number;
 };
 
 function CasinoConfig() {
@@ -76,7 +76,7 @@ function CasinoConfig() {
         //onFinish={onFinish}
         autoComplete="off"
       >
-        <Form.Item
+        {/* <Form.Item
           label="Тип пополнений"
           name="depositMode"
           initialValue={form.depositMode}
@@ -84,6 +84,30 @@ function CasinoConfig() {
           <Select
             options={depositModeOptions}
             onSelect={(val) => handleChangeFormField("depositMode", val)}
+          />
+        </Form.Item> */}
+
+        <Form.Item
+          label="Рабочий домен"
+          name="currentDomain"
+          initialValue={form.currentDomain}
+        >
+          <Input
+            onChange={(e) =>
+              handleChangeFormField("currentDomain", e.target.value)
+            }
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Ссылка на игрового бота"
+          name="currentCasinoBotDomain"
+          initialValue={form.currentCasinoBotDomain}
+        >
+          <Input
+            onChange={(e) =>
+              handleChangeFormField("currentCasinoBotDomain", e.target.value)
+            }
           />
         </Form.Item>
 
@@ -112,7 +136,38 @@ function CasinoConfig() {
             }
           />
         </Form.Item>
+        <hr/>
+        <Form.Item
+          label="Сумма вояджера"
+          name="voyagerAmount"
+          initialValue={form.voyagerAmount}
+        >
+          <Input
+            type="number"
+            min={0}
+            onChange={(e) =>
+              handleChangeFormField("voyagerAmount", +e.target.value)
+            }
+            prefix="₽"
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Приветственный бонус, %"
+          name="welcomeBonus"
+          initialValue={form.welcomeBonus}
+        >
+          <Input
+            type="number"
+            min={0}
+            onChange={(e) =>
+              handleChangeFormField("welcomeBonus", +e.target.value)
+            }
+            prefix="%"
+          />
+        </Form.Item>
       </Form>
+      
 
       <Space
         style={{ width: "100%", justifyContent: "flex-end", marginTop: 50 }}

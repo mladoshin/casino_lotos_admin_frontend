@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { AppContext } from "../context/AppContext";
 import { UserRole } from "../routes/types";
+import { getUserLabel } from "@utils/user";
 const { Text } = Typography;
 
 const WithdrawTransactions = () => {
@@ -61,7 +62,7 @@ const WithdrawTransactions = () => {
       title: "Пользователь",
       dataIndex: "user",
       key: "user",
-      render: (user) => <Text>{user.email || user.telegram_username || user.phone}</Text>,
+      render: (user) => <Text>{getUserLabel(user)}</Text>,
     },
     {
       title: "Дата создания",
@@ -73,6 +74,22 @@ const WithdrawTransactions = () => {
       title: "Сумма",
       key: "amount",
       dataIndex: "amount",
+    },
+    {
+      title: "Метод",
+      key: "method",
+      dataIndex: "method",
+    },
+    {
+      title: "Валюта",
+      key: "currency",
+      dataIndex: "currency",
+    },
+    {
+      title: "Реквизиты",
+      key: "currency",
+      render: (_text, item) => <Text>{item.card || item.sbp || item.crypto_address}</Text>,
+
     },
     {
       title: "Статус",

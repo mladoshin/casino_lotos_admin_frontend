@@ -4,6 +4,7 @@ import { api, withCredentials } from "../services/api";
 import { ColumnsType } from "antd/es/table";
 const { Text } = Typography;
 import { DeleteOutlined } from "@ant-design/icons";
+import { getUserTelegramLabel } from "@utils/user";
 
 function Managers() {
   const [managers, setManagers] = useState<any[]>([]);
@@ -73,9 +74,8 @@ function Managers() {
     },
     {
       title: "TG",
-      dataIndex: "telegram_id",
-      key: "telegram_id",
-      render: (text) => <Text>{text}</Text>,
+      key: "telegram",
+      render: (_text, user) => <Text>{getUserTelegramLabel(user)}</Text>,
     },
     {
       title: "",
