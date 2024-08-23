@@ -191,6 +191,7 @@ function AddGamesToCategoryModal({
         <span>Выбрано {selectedGamesCount} элементов</span>
       </div>
       <Table
+      className="min650mobile"
         loading={isFetchGamesLoading}
         columns={columns}
         dataSource={filteredGamesByName}

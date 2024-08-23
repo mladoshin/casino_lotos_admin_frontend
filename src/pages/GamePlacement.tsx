@@ -176,7 +176,7 @@ function GamePlacement() {
 
   return (
     <div>
-      <Space style={{ marginBottom: 30 }}>
+      <Space className="gameCategories" style={{ marginBottom: 30 }}>
         {GameCategories.map((cat) => (
           <Button
             key={cat.value}

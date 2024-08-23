@@ -152,7 +152,7 @@ function PaymentDetails() {
   return (
     <div>
       <div>
-        <h2>Банковские карты</h2>
+        <h2 className="ml12">Банковские карты</h2>
         <Table
           style={{ maxWidth: 1000 }}
           columns={getColumns("card")}
@@ -170,7 +170,7 @@ function PaymentDetails() {
       </div>
 
       <div style={{ marginTop: 44 }}>
-        <h2>СБП</h2>
+        <h2 className="ml12">СБП</h2>
         <Table
           style={{ maxWidth: 1000 }}
           columns={getColumns("sbp")}
@@ -187,15 +187,11 @@ function PaymentDetails() {
         />
       </div>
 
-      <div>
-        <p style={{ color: "red" }}>{error}</p>
-      </div>
-
-      <Space
+      <Space className="pr12"
         style={{ width: "100%", justifyContent: "flex-end", marginTop: 50 }}
       >
         <Button onClick={fetchData}>Отменить</Button>
-        <Button type="primary" onClick={savePaymentDetails}>
+        <Button  type="primary" onClick={savePaymentDetails}>
           Сохранить изменения
         </Button>
       </Space>

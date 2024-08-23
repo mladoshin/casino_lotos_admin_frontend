@@ -67,7 +67,7 @@ function CasinoConfig() {
   }
 
   return (
-    <div>
+    <div className="mobile-full">
       <h2>Конфигурация сервиса</h2>
       <Form
         name="basic"
