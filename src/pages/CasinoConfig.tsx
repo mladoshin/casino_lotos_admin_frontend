@@ -15,7 +15,7 @@ type ConfigForm = {
   depositSessionDuration?: number;
   currentDomain?: string;
   currentCasinoBotDomain?: string;
-  voyagerAmount?: number;
+  voyager?: number;
   welcomeBonus?: number;
 };
 
@@ -138,17 +138,17 @@ function CasinoConfig() {
         </Form.Item>
         <hr/>
         <Form.Item
-          label="Сумма вояджера"
-          name="voyagerAmount"
-          initialValue={form.voyagerAmount}
+          label="Множитель вояджера"
+          name="voyager"
+          initialValue={form.voyager}
         >
           <Input
             type="number"
             min={0}
             onChange={(e) =>
-              handleChangeFormField("voyagerAmount", +e.target.value)
+              handleChangeFormField("voyager", +e.target.value)
             }
-            prefix="₽"
+            prefix="X"
           />
         </Form.Item>
 

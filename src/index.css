@@ -134,7 +134,7 @@ body {
     max-width: calc(100%);
     overflow-x: auto;
   }
-  .ant-table-wrapper div:not(.min650mobile .ant-table-container, ) {
+  .ant-table-wrapper div:not(.min650mobile .ant-table-container) {
     min-width: fit-content !important;
     width: fit-content !important;
   }
