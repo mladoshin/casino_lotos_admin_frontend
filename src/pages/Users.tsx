@@ -14,6 +14,7 @@ import { api, withCredentials } from "../services/api";
 import { AppContext } from "../context/AppContext";
 import { UserRole } from "../routes/types";
 import { getUserTelegramLabel } from "@utils/user";
+import { DeleteOutlined } from "@ant-design/icons";
 const { Text } = Typography;
 
 const Users = () => {
@@ -72,6 +73,17 @@ const Users = () => {
     } finally {
       setLoadingSendMessage(false);
     }
+  }
+
+  async function handleDeleteUser(userId: string) {
+    if (!confirm("Уверены, что хотите удалить пользователя?")) return;
+
+    try {
+      await withCredentials((headers) =>
+        api.delete(`/user/${userId}`, headers)
+      );
+      await fetchData();
+    } catch (err) {}
   }
 
   const columns: ColumnsType<any> = [
@@ -149,6 +161,11 @@ const Users = () => {
             <Button onClick={() => setMessageModalOpen(item.id)}>
               Сообщение
             </Button>
+            <Button
+              icon={<DeleteOutlined />}
+              danger
+              onClick={() => handleDeleteUser(item.id)}
+            />
           </Space>
         ) : null,
     },
