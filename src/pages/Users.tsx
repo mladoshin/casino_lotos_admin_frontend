@@ -1,31 +1,19 @@
-import {
-  Button,
-  Input,
-  Modal,
-  Space,
-  Table,
-  Typography,
-  notification,
-} from "antd";
+import { Button, Input, Modal, Space, Table, Typography, notification } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
-import { AppContext } from "../context/AppContext";
-import { UserRole } from "../routes/types";
-import { getUserTelegramLabel } from "@utils/user";
 import { DeleteOutlined } from "@ant-design/icons";
+import ReferralStatisticsModal from "./ReferralStatisticsModal";
+
 const { Text } = Typography;
 
 const Users = () => {
-  const { user } = useContext(AppContext);
   const [messageModalOpen, setMessageModalOpen] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
-
-  const [appState, setAppState] = useState();
-  const navigate = useNavigate();
+  const [appState, setAppState] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingSendMessage, setLoadingSendMessage] = useState(false);
+  const [referralModalOpen, setReferralModalOpen] = useState<string | null>(null);
   const [notificationApi, contextHolder] = notification.useNotification();
 
   useEffect(() => {
@@ -33,16 +21,9 @@ const Users = () => {
   }, []);
 
   async function fetchData() {
-    let url = "";
-    if (user?.role === UserRole.ADMIN) {
-      url = "user";
-    } else if (user?.role === UserRole.MANAGER) {
-      url = "manager/referrals";
-    }
-
     try {
       setLoading(true);
-      const resp = await withCredentials((headers) => api.get(url, headers));
+      const resp = await withCredentials((headers) => api.get("user", headers));
       setAppState(resp.data);
     } catch (error) {
       console.log(error);
@@ -54,17 +35,9 @@ const Users = () => {
   async function sendMessage(userId: string, message: string) {
     try {
       setLoadingSendMessage(true);
-      if (userId === "all") {
-        let url = "admin/broadcast-message";
-        if (user?.role === UserRole.MANAGER) {
-          url = "manager/broadcast-message";
-        }
-        await withCredentials((headers) => api.post(url, { message }, headers));
-      } else {
-        await withCredentials((headers) =>
-          api.post("admin/send-message", { user_id: userId, message }, headers)
-        );
-      }
+      await withCredentials((headers) =>
+        api.post("admin/send-message", { user_id: userId, message }, headers)
+      );
       setMessage("");
       notificationApi.success({ message: "Сообщение успешно отправлено" });
     } catch (error) {
@@ -83,7 +56,9 @@ const Users = () => {
         api.delete(`/user/${userId}`, headers)
       );
       await fetchData();
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   const columns: ColumnsType<any> = [
@@ -104,7 +79,7 @@ const Users = () => {
       dataIndex: "totalEarned",
       key: "totalEarned",
       render: (_t, item) => (
-        <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
+        <Text>
           {item.lastTotalEarned.toFixed(2)}/{item.totalEarned.toFixed(2)}
         </Text>
       ),
@@ -114,25 +89,10 @@ const Users = () => {
       dataIndex: "totalLoss",
       key: "totalEarned",
       render: (_t, item) => (
-        <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
+        <Text>
           {item.lastTotalLoss.toFixed(2)}/{item.totalLoss.toFixed(2)}
         </Text>
       ),
-    },
-    {
-      title: "RTP",
-      key: "rtp",
-      render: (_t, item) => {
-        let rtpValue = null;
-        if (item.totalLoss !== 0) {
-          rtpValue = (item.totalEarned / item.totalLoss) * 100;
-        }
-        return (
-          <Text style={{ textAlign: "right", width: "100%", display: "block" }}>
-            {rtpValue !== null ? `${Math.round(rtpValue)}%` : ""}
-          </Text>
-        );
-      },
     },
     {
       title: "Номер телефона",
@@ -147,27 +107,21 @@ const Users = () => {
       render: (text) => <Text>{text}</Text>,
     },
     {
-      title: "TG",
-      key: "telegram",
-      render: (_text, item) => <Text>{getUserTelegramLabel(item)}</Text>,
-    },
-    {
       title: "",
       key: "action",
-      render: (_, item) =>
-        user?.role === UserRole.ADMIN ? (
-          <Space>
-            <Button onClick={() => navigate(item.id)}>Открыть</Button>
-            <Button onClick={() => setMessageModalOpen(item.id)}>
-              Сообщение
-            </Button>
-            <Button
-              icon={<DeleteOutlined />}
-              danger
-              onClick={() => handleDeleteUser(item.id)}
-            />
-          </Space>
-        ) : null,
+      render: (_, item) => (
+        <Space>
+          <Button onClick={() => setMessageModalOpen(item.id)}>Сообщение</Button>
+          <Button onClick={() => setReferralModalOpen(item.id)}>
+            Показать рефералов
+          </Button>
+          <Button
+            icon={<DeleteOutlined />}
+            danger
+            onClick={() => handleDeleteUser(item.id)}
+          />
+        </Space>
+      ),
     },
   ];
 
@@ -178,7 +132,7 @@ const Users = () => {
         loading={loading}
         columns={columns}
         dataSource={appState}
-        rowKey={(meditation) => meditation.id}
+        rowKey={(user) => user.id}
       />
       <Button
         type="primary"
@@ -199,7 +153,7 @@ const Users = () => {
           <Button
             type="primary"
             loading={loadingSendMessage}
-            onClick={() => sendMessage(messageModalOpen, message)}
+            onClick={() => sendMessage(messageModalOpen as string, message)}
           >
             Отправить
           </Button>,
@@ -212,6 +166,13 @@ const Users = () => {
           onChange={(e) => setMessage(e.target.value)}
         />
       </Modal>
+
+      {referralModalOpen && (
+        <ReferralStatisticsModal
+          userId={referralModalOpen}
+          onClose={() => setReferralModalOpen(null)}
+        />
+      )}
     </>
   );
 };
