@@ -52,10 +52,10 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({ userI
 
   const columns = [
     {
-      title: 'Имя',
-      dataIndex: 'name',
-      key: 'name',
-      render: (text: string) => text || 'Имя не заполнено',
+      title: 'Email',  // Изменяем заголовок на Email
+      dataIndex: 'email',  // Используем поле email вместо name
+      key: 'email',
+      render: (text: string) => text || 'Email не заполнен',
     },
     {
       title: 'Уровень реферала',  // Добавляем столбец для уровня
