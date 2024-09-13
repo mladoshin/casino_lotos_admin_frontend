@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'; 
-import { Modal, Typography } from 'antd';
+import { Modal, Typography, Table } from 'antd';
 import { api } from '../services/api'; 
 
 const { Text } = Typography;
@@ -35,12 +35,33 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({ userI
     }
   }
 
-  const calculateEarnings = (loss: number, level: number) => {
-    if (level === 1) return (loss * 0.1).toFixed(2); // 10% для 1 уровня
-    if (level === 2) return (loss * 0.05).toFixed(2); // 5% для 2 уровня
-    if (level === 3) return (loss * 0.03).toFixed(2); // 3% для 3 уровня
+  const calculateEarnings = (totalLoss: number, level: number) => {
+    if (!totalLoss) return '0.00'; // Если totalLoss undefined или 0
+    if (level === 1) return (totalLoss * 0.1).toFixed(2); // 10% для 1 уровня
+    if (level === 2) return (totalLoss * 0.05).toFixed(2); // 5% для 2 уровня
+    if (level === 3) return (totalLoss * 0.03).toFixed(2); // 3% для 3 уровня
     return '0.00'; 
   };
+
+  const columns = [
+    {
+      title: 'Имя',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text: string) => text || 'Имя не заполнено',
+    },
+    {
+      title: 'Проигрыш',
+      dataIndex: 'totalLoss',  // Используем totalLoss
+      key: 'totalLoss',
+      render: (totalLoss: number) => totalLoss ? totalLoss.toFixed(2) : '0.00',
+    },
+    {
+      title: 'Ваш заработок',
+      key: 'earned',
+      render: (_: any, record: any) => calculateEarnings(record.totalLoss, record.level),
+    }
+  ];
 
   return (
     <Modal
@@ -51,22 +72,21 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({ userI
     >
       {referralData ? (
         <div>
-          <Text>Количество рефералов: {referralData.stats.userQuantity}</Text>
+          <Text>Количество рефералов: {referralData.stats.userQuantity || 0}</Text>
           <br />
-          <Text>Всего проиграно рефералами: {referralData.stats.lostAmount}</Text>
+          <Text>Всего проиграно рефералами: {referralData.stats.totalLoss || '0.00'}</Text>
           <br />
-          <Text>Всего заработано с рефералов: {referralData.stats.wonAmount}</Text>
+          <Text>Всего заработано с рефералов: {referralData.stats.wonAmount || '0.00'}</Text>
           <br />
           {referralData.users.length > 0 ? (
-            <div>
-              {referralData.users.map((user: any) => (
-                <div key={user.id}>
-                  <Text>
-                    {`ID: ${user.id}, Имя: ${user.name}, Уровень: ${user.level}, Проигрыш: ${user.lostAmount}, Ваш заработок: ${calculateEarnings(user.lostAmount, user.level)}`}
-                  </Text>
-                </div>
-              ))}
-            </div>
+            <Table 
+              dataSource={referralData.users.map((user: any) => ({
+                ...user,
+                key: user.id,
+              }))}
+              columns={columns}
+              pagination={false}
+            />
           ) : (
             <Text>Рефералов нет</Text>
           )}
