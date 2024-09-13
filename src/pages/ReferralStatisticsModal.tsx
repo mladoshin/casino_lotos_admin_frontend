@@ -43,12 +43,30 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({ userI
     return '0.00'; 
   };
 
+  const getEarningPercentage = (level: number) => {
+    if (level === 1) return "10%"; // 10% для 1 уровня
+    if (level === 2) return "5%";  // 5% для 2 уровня
+    if (level === 3) return "3%";  // 3% для 3 уровня
+    return "0%";  // Если уровень неизвестен
+  };
+
   const columns = [
     {
       title: 'Имя',
       dataIndex: 'name',
       key: 'name',
       render: (text: string) => text || 'Имя не заполнено',
+    },
+    {
+      title: 'Уровень реферала',  // Добавляем столбец для уровня
+      dataIndex: 'level',
+      key: 'level',
+      render: (level: number) => `Уровень ${level}`,
+    },
+    {
+      title: 'Процент заработка',  // Добавляем столбец для процента
+      key: 'earningPercentage',
+      render: (_: any, record: any) => getEarningPercentage(record.level),
     },
     {
       title: 'Проигрыш',
