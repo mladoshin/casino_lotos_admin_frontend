@@ -49,27 +49,36 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({ userI
     return "0%";  // Если уровень неизвестен
   };
 
+  // Функции для подсчета итогов
+  const totalReferralLoss = () => {
+    return referralData?.users.reduce((sum: number, user: any) => sum + (user.totalLoss || 0), 0).toFixed(2);
+  };
+
+  const totalReferralEarnings = () => {
+    return referralData?.users.reduce((sum: number, user: any) => sum + parseFloat(calculateEarnings(user.totalLoss, user.level)), 0).toFixed(2);
+  };
+
   const columns = [
     {
-      title: 'Email',  // Изменяем заголовок на Email
-      dataIndex: 'email',  // Используем поле email вместо name
+      title: 'Email',  
+      dataIndex: 'email',  
       key: 'email',
       render: (text: string) => text || 'Email не заполнен',
     },
     {
-      title: 'Уровень реферала',  // Добавляем столбец для уровня
+      title: 'Уровень реферала',  
       dataIndex: 'level',
       key: 'level',
       render: (level: number) => `Уровень ${level}`,
     },
     {
-      title: 'Процент заработка',  // Добавляем столбец для процента
+      title: 'Процент заработка',  
       key: 'earningPercentage',
       render: (_: any, record: any) => getEarningPercentage(record.level),
     },
     {
       title: 'Проигрыш',
-      dataIndex: 'totalLoss',  // Используем totalLoss
+      dataIndex: 'totalLoss',  
       key: 'totalLoss',
       render: (totalLoss: number) => totalLoss ? totalLoss.toFixed(2) : '0.00',
     },
@@ -92,9 +101,9 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({ userI
         <div>
           <Text>Количество рефералов: {referralData.stats.userQuantity || 0}</Text>
           <br />
-          <Text>Всего проиграно рефералами: {referralData.stats.totalLoss || '0.00'}</Text>
+          <Text>Всего проиграно рефералами: {totalReferralLoss() || '0.00'}</Text>
           <br />
-          <Text>Всего заработано с рефералов: {referralData.stats.wonAmount || '0.00'}</Text>
+          <Text>Всего заработано с рефералов: {totalReferralEarnings() || '0.00'}</Text>
           <br />
           {referralData.users.length > 0 ? (
             <Table 
