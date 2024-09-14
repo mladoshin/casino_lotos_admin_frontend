@@ -86,6 +86,7 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({ userI
       visible={true}
       onCancel={onClose}
       footer={null}
+      width={800}
     >
       {referralData ? (
         <div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
 import ReferralStatisticsModal from "./ReferralStatisticsModal";
+import { useNavigate } from "react-router-dom"; // Добавлено для использования навигации
 
 const { Text } = Typography;
 
@@ -15,6 +16,7 @@ const Users = () => {
   const [loadingSendMessage, setLoadingSendMessage] = useState(false);
   const [referralModalOpen, setReferralModalOpen] = useState<string | null>(null);
   const [notificationApi, contextHolder] = notification.useNotification();
+  const navigate = useNavigate(); // Добавлено для использования навигации
 
   useEffect(() => {
     fetchData();
@@ -115,6 +117,7 @@ const Users = () => {
           <Button onClick={() => setReferralModalOpen(item.id)}>
             Показать рефералов
           </Button>
+          <Button onClick={() => navigate(item.id)}>Открыть</Button> {/* Кнопка "Открыть" */}
           <Button
             icon={<DeleteOutlined />}
             danger
