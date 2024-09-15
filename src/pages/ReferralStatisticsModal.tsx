@@ -24,6 +24,7 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({ userI
       const headers = { Authorization: `Bearer ${token}` };
 
       const resp = await api.get(`/user/referrals`, {
+         headers,
          params: { userId },
       });
 
