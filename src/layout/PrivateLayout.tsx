@@ -116,7 +116,7 @@ const PrivateLayout = ({ children }: Props) => {
     if (!user) return [];
     const role = user.role;
     let tmpItems = [];
-    if (role === UserRole.ADMIN) {
+    if (role === UserRole.ADMIN || role === UserRole.USER) {
       tmpItems = adminMenuItems;
     } else if (role === UserRole.MANAGER) {
       tmpItems = managerMenuItems;
@@ -229,7 +229,7 @@ const PrivateLayout = ({ children }: Props) => {
                 }
               }}
               className={isAsideOpen ? "aside--open" : ""}
-              style={{ background: colorBgContainer }}
+              style={{ background: 'red' }}
               width={250}
             >
               <Menu
