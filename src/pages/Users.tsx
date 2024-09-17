@@ -5,6 +5,7 @@ import { api, withCredentials } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
 import ReferralStatisticsModal from "./ReferralStatisticsModal";
 import { useNavigate } from "react-router-dom"; // Добавлено для использования навигации
+import { getUserTelegramLabel } from "@utils/user"; // Добавлено для логики TG
 
 const { Text } = Typography;
 
@@ -107,6 +108,11 @@ const Users = () => {
       dataIndex: "email",
       key: "email",
       render: (text) => <Text>{text}</Text>,
+    },
+    {
+      title: "TG", // Добавляем колонку TG
+      key: "telegram",
+      render: (_text, item) => <Text>{getUserTelegramLabel(item)}</Text>, // Логика для отображения TG
     },
     {
       title: "",
