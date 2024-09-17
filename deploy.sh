@@ -1,6 +1,6 @@
 #!/bin/sh
 mode=$1
-if [[ -z "$mode" ]]; then 
+if [ -z "$mode" ]; then 
 echo Error! Select build mode: build or staging
 exit 1
 fi
