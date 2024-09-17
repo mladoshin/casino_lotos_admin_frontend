@@ -1,8 +1,8 @@
 #!/bin/sh
 mode=$1
-if [ -z "$mode" ] 
+if [[ -z "$mode" ]]; then 
 echo Error! Select build mode: build or staging
-then exit 1
+exit 1
 fi
 
 git reset --hard
