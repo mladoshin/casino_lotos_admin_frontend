@@ -3,6 +3,7 @@ import { Button, Checkbox, Form, Input, Typography } from "antd";
 import { useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const { Text, Title, Link } = Typography;
 
@@ -22,6 +23,7 @@ function LoginPage() {
       navigate("/games")
     } catch (error) {
       console.log(error);
+      Swal.fire('Ошибка', error?.message, 'error');
       setLoading(false);
     }
   }
