@@ -176,12 +176,12 @@ const Users = () => {
         />
       </Modal>
 
-      {referralModalOpen && (
         <ReferralStatisticsModal
+          open={!!referralModalOpen}
           userId={referralModalOpen}
           onClose={() => setReferralModalOpen(null)}
         />
-      )}
+      
     </>
   );
 };

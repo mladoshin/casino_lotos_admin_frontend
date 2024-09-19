@@ -1,23 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Typography, Table } from "antd";
-import { api } from "../services/api";
+import { api, withCredentials } from "../services/api";
+import { getUserLabel } from "@utils/user";
 
 const { Text } = Typography;
 
 interface ReferralStatisticsModalProps {
+  open: boolean;
   userId: string;
   onClose: () => void;
 }
 
 const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
+  open,
   userId,
   onClose,
 }) => {
   const [referralData, setReferralData] = useState<any>(null);
+  const [allReferrals, setAllReferrals] = useState<any[]>([]);
 
   useEffect(() => {
     if (userId) {
       fetchReferralStatistics();
+      fetchAllReferrals();
     }
   }, [userId]);
 
@@ -38,7 +43,19 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
     }
   }
 
-  const columns = [
+  async function fetchAllReferrals() {
+    try {
+      const resp = await withCredentials((headers) =>
+        api.get(`/user/${userId}/referrals?type=all`, headers)
+      );
+
+      setAllReferrals(resp.data);
+    } catch (error) {
+      console.error("Ошибка загрузки рефералов:", error);
+    }
+  }
+
+  const cashbackReferralsTableColumns = [
     {
       title: "Email",
       dataIndex: "email",
@@ -62,24 +79,50 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
     {
       title: "Сумма проигрышей",
       key: "lostAmount",
-      render: (_: any, record: any) => record.totalLoss
+      render: (_: any, record: any) => record.totalLoss,
     },
     {
       title: "Сумма выигрышей",
       key: "earned",
-      render: (_: any, record: any) =>
-        record.totalEarned
+      render: (_: any, record: any) => record.totalEarned,
+    },
+  ];
+
+  const allReferralsTableColumns = [
+    {
+      title: "Пользователь",
+      key: "user",
+      render: (_: any, item: any) => <Text>{getUserLabel(item.referral)}</Text>,
+    },
+    {
+      title: "Уровень реферала",
+      dataIndex: "level",
+      key: "level",
+      render: (level: number) => `Уровень ${level}`,
+    },
+    {
+      title: "RTP",
+      key: "earningPercentage",
+      render: (_: any, item: any) =>
+        item.referral.totalLoss
+          ? (item.referral.totalEarned / item.referral.totalLoss) * 100
+          : "N/A",
+    },
+    {
+      title: "Сумма проигрышей",
+      key: "lostAmount",
+      render: (_: any, item: any) => item.referral.totalLoss,
+    },
+    {
+      title: "Сумма выигрышей",
+      key: "earned",
+      render: (_: any, item: any) => item.referral.totalEarned,
     },
   ];
 
   return (
-    <Modal
-      title="Статистика рефералов"
-      visible={true}
-      onCancel={onClose}
-      footer={null}
-      width={800}
-    >
+    <Modal title="Рефералы" onCancel={onClose} footer={null} width={800} open={open}>
+      <h2>Рефералы с кэшбэком</h2>
       {referralData ? (
         <div>
           <Text>
@@ -100,7 +143,7 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
                 ...user,
                 key: user.id,
               }))}
-              columns={columns}
+              columns={cashbackReferralsTableColumns}
               pagination={false}
             />
           ) : (
@@ -110,6 +153,9 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
       ) : (
         <Text>Загрузка данных...</Text>
       )}
+
+      <h2>Все рефералы</h2>
+      <Table columns={allReferralsTableColumns} dataSource={allReferrals} />
     </Modal>
   );
 };
