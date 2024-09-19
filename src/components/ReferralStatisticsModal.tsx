@@ -30,7 +30,8 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
 
   function getUserRtp(user: any) {
     if (!user.totalLoss) return "N/A";
-    return `${(user.totalEarned / user.totalLoss) * 100}%`;
+    const percentage = (user.totalEarned / user.totalLoss) * 100
+    return `${percentage.toFixed(0)}%`;
   }
 
   async function fetchReferralStatistics() {
