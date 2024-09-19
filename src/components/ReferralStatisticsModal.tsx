@@ -105,7 +105,7 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
       key: "earningPercentage",
       render: (_: any, item: any) =>
         item.referral.totalLoss
-          ? (item.referral.totalEarned / item.referral.totalLoss) * 100
+          ? `${((item.referral.totalEarned / item.referral.totalLoss) * 100).toFixed(0)}%`
           : "N/A",
     },
     {
