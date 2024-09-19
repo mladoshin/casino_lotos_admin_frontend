@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Typography, Table } from "antd";
 import { api, withCredentials } from "../services/api";
 import { getUserLabel } from "@utils/user";
+import InlineText from "./InlineText";
 
 const { Text } = Typography;
 
@@ -57,16 +58,15 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
 
   const cashbackReferralsTableColumns = [
     {
-      title: "Email",
-      dataIndex: "email",
+      title: "Пользователь",
       key: "email",
-      render: (text: string) => text || "Email не заполнен",
+      render: (_: any, item: any) => <InlineText>{getUserLabel(item)}</InlineText>
     },
     {
       title: "Уровень реферала",
       dataIndex: "level",
       key: "level",
-      render: (level: number) => `Уровень ${level}`,
+      render: (level: number) => <InlineText>{`Уровень ${level}`}</InlineText>,
     },
     {
       title: "RTP",
@@ -79,12 +79,12 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
     {
       title: "Сумма проигрышей",
       key: "lostAmount",
-      render: (_: any, record: any) => record.totalLoss,
+      render: (_: any, record: any) => <InlineText>{record.totalLoss}</InlineText>,
     },
     {
       title: "Сумма выигрышей",
       key: "earned",
-      render: (_: any, record: any) => record.totalEarned,
+      render: (_: any, record: any) => <InlineText>{record.totalEarned}</InlineText>,
     },
   ];
 
@@ -92,36 +92,51 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
     {
       title: "Пользователь",
       key: "user",
-      render: (_: any, item: any) => <Text>{getUserLabel(item.referral)}</Text>,
+      render: (_: any, item: any) => (
+        <InlineText>{getUserLabel(item.referral || {})}</InlineText>
+      ),
     },
     {
       title: "Уровень реферала",
       dataIndex: "level",
       key: "level",
-      render: (level: number) => `Уровень ${level}`,
+      render: (level: number) => <InlineText>{`Уровень ${level}`}</InlineText>,
     },
     {
       title: "RTP",
       key: "earningPercentage",
       render: (_: any, item: any) =>
         item.referral.totalLoss
-          ? `${((item.referral.totalEarned / item.referral.totalLoss) * 100).toFixed(0)}%`
+          ? `${(
+              (item.referral.totalEarned / item.referral.totalLoss) *
+              100
+            ).toFixed(0)}%`
           : "N/A",
     },
     {
       title: "Сумма проигрышей",
       key: "lostAmount",
-      render: (_: any, item: any) => item.referral.totalLoss,
+      render: (_: any, item: any) => (
+        <InlineText>{item.referral.totalLoss}</InlineText>
+      ),
     },
     {
       title: "Сумма выигрышей",
       key: "earned",
-      render: (_: any, item: any) => item.referral.totalEarned,
+      render: (_: any, item: any) => (
+        <InlineText>{item.referral.totalEarned}</InlineText>
+      ),
     },
   ];
 
   return (
-    <Modal title="Рефералы" onCancel={onClose} footer={null} width={800} open={open}>
+    <Modal
+      title="Рефералы"
+      onCancel={onClose}
+      footer={null}
+      width={800}
+      open={open}
+    >
       <h2>Рефералы с кэшбэком</h2>
       {referralData ? (
         <div>
@@ -155,7 +170,11 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
       )}
 
       <h2>Все рефералы</h2>
-      <Table columns={allReferralsTableColumns} dataSource={allReferrals} />
+      <Table
+        columns={allReferralsTableColumns}
+        dataSource={allReferrals}
+        scroll={{ x: "max-content" }}
+      />
     </Modal>
   );
 };

@@ -1,4 +1,12 @@
-import { Button, Input, Modal, Space, Table, Typography, notification } from "antd";
+import {
+  Button,
+  Input,
+  Modal,
+  Space,
+  Table,
+  Typography,
+  notification,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
@@ -6,6 +14,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import ReferralStatisticsModal from "../components/ReferralStatisticsModal";
 import { useNavigate } from "react-router-dom"; // Добавлено для использования навигации
 import { getUserTelegramLabel } from "@utils/user"; // Добавлено для логики TG
+import InlineText from "components/InlineText";
 
 const { Text } = Typography;
 
@@ -15,7 +24,9 @@ const Users = () => {
   const [appState, setAppState] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingSendMessage, setLoadingSendMessage] = useState(false);
-  const [referralModalOpen, setReferralModalOpen] = useState<string | null>(null);
+  const [referralModalOpen, setReferralModalOpen] = useState<string | null>(
+    null
+  );
   const [notificationApi, contextHolder] = notification.useNotification();
   const navigate = useNavigate(); // Добавлено для использования навигации
 
@@ -69,22 +80,22 @@ const Users = () => {
       title: "ФИО",
       dataIndex: "name",
       key: "name",
-      render: (text) => <Text>{text}</Text>,
+      render: (text) => <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>,
     },
     {
       title: "Баланс",
       dataIndex: "balance",
       key: "balance",
-      render: (text) => <Text>{text.toFixed(2)}</Text>,
+      render: (text) => <InlineText style={{ whiteSpace: "nowrap" }}>{text.toFixed(2)}</InlineText>,
     },
     {
       title: "Всего заработано",
       dataIndex: "totalEarned",
       key: "totalEarned",
       render: (_t, item) => (
-        <Text>
+        <InlineText style={{ whiteSpace: "nowrap" }}>
           {item.lastTotalEarned.toFixed(2)}/{item.totalEarned.toFixed(2)}
-        </Text>
+        </InlineText>
       ),
     },
     {
@@ -92,38 +103,42 @@ const Users = () => {
       dataIndex: "totalLoss",
       key: "totalEarned",
       render: (_t, item) => (
-        <Text>
+        <InlineText style={{ whiteSpace: "nowrap" }}>
           {item.lastTotalLoss.toFixed(2)}/{item.totalLoss.toFixed(2)}
-        </Text>
+        </InlineText>
       ),
     },
     {
       title: "Номер телефона",
       dataIndex: "phone",
       key: "phone",
-      render: (text) => <Text>{text}</Text>,
+      render: (text) => <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>,
     },
     {
       title: "Почта",
       dataIndex: "email",
       key: "email",
-      render: (text) => <Text>{text}</Text>,
+      render: (text) => <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>,
     },
     {
       title: "TG", // Добавляем колонку TG
       key: "telegram",
-      render: (_text, item) => <Text>{getUserTelegramLabel(item)}</Text>, // Логика для отображения TG
+      render: (_text, item) => <InlineText >{getUserTelegramLabel(item)}</InlineText>, // Логика для отображения TG
     },
     {
       title: "",
       key: "action",
+      fixed: "right",
       render: (_, item) => (
-        <Space>
-          <Button onClick={() => setMessageModalOpen(item.id)}>Сообщение</Button>
+        <Space style={{flexWrap: "wrap", width: 300}}>
+          <Button onClick={() => setMessageModalOpen(item.id)}>
+            Сообщение
+          </Button>
           <Button onClick={() => setReferralModalOpen(item.id)}>
             Показать рефералов
           </Button>
-          <Button onClick={() => navigate(item.id)}>Открыть</Button> {/* Кнопка "Открыть" */}
+          <Button onClick={() => navigate(item.id)}>Открыть</Button>{" "}
+          {/* Кнопка "Открыть" */}
           <Button
             icon={<DeleteOutlined />}
             danger
@@ -142,6 +157,7 @@ const Users = () => {
         columns={columns}
         dataSource={appState}
         rowKey={(user) => user.id}
+        scroll={{ x: "max-content" }}
       />
       <Button
         type="primary"
@@ -176,12 +192,11 @@ const Users = () => {
         />
       </Modal>
 
-        <ReferralStatisticsModal
-          open={!!referralModalOpen}
-          userId={referralModalOpen}
-          onClose={() => setReferralModalOpen(null)}
-        />
-      
+      <ReferralStatisticsModal
+        open={!!referralModalOpen}
+        userId={referralModalOpen}
+        onClose={() => setReferralModalOpen(null)}
+      />
     </>
   );
 };
