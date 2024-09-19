@@ -3,6 +3,7 @@ import { Modal, Typography, Table } from "antd";
 import { api, withCredentials } from "../services/api";
 import { getUserLabel } from "@utils/user";
 import InlineText from "./InlineText";
+import { User } from "@customTypes/entity/User";
 
 const { Text } = Typography;
 
@@ -26,6 +27,11 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
       fetchAllReferrals();
     }
   }, [userId]);
+
+  function getUserRtp(user: any) {
+    if (!user.totalLoss) return "N/A";
+    return `${(user.totalEarned / user.totalLoss) * 100}%`;
+  }
 
   async function fetchReferralStatistics() {
     try {
@@ -60,7 +66,9 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
     {
       title: "Пользователь",
       key: "email",
-      render: (_: any, item: any) => <InlineText>{getUserLabel(item)}</InlineText>
+      render: (_: any, item: any) => (
+        <InlineText>{getUserLabel(item)}</InlineText>
+      ),
     },
     {
       title: "Уровень реферала",
@@ -71,20 +79,21 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
     {
       title: "RTP",
       key: "earningPercentage",
-      render: (_: any, record: any) =>
-        record.totalLoss
-          ? (record.totalEarned / record.totalLoss) * 100
-          : "N/A",
+      render: (_: any, record: any) => getUserRtp(record),
     },
     {
       title: "Сумма проигрышей",
       key: "lostAmount",
-      render: (_: any, record: any) => <InlineText>{record.totalLoss}</InlineText>,
+      render: (_: any, record: any) => (
+        <InlineText>{record.totalLoss}</InlineText>
+      ),
     },
     {
       title: "Сумма выигрышей",
       key: "earned",
-      render: (_: any, record: any) => <InlineText>{record.totalEarned}</InlineText>,
+      render: (_: any, record: any) => (
+        <InlineText>{record.totalEarned}</InlineText>
+      ),
     },
   ];
 
@@ -105,13 +114,7 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
     {
       title: "RTP",
       key: "earningPercentage",
-      render: (_: any, item: any) =>
-        item.referral.totalLoss
-          ? `${(
-              (item.referral.totalEarned / item.referral.totalLoss) *
-              100
-            ).toFixed(0)}%`
-          : "N/A",
+      render: (_: any, item: any) => getUserRtp(item),
     },
     {
       title: "Сумма проигрышей",
