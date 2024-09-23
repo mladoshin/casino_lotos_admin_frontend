@@ -1,11 +1,4 @@
-import {
-  Button,
-  Form,
-  Input,
-  Space,
-  Spin,
-  Switch
-} from "antd";
+import { Button, Form, Input, Space, Spin, Switch } from "antd";
 import { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
 
@@ -17,6 +10,7 @@ type ConfigForm = {
   currentCasinoBotDomain?: string;
   voyager?: number;
   welcomeBonus?: number;
+  isWheelActive?: boolean;
 };
 
 function CasinoConfig() {
@@ -136,7 +130,16 @@ function CasinoConfig() {
             }
           />
         </Form.Item>
-        <hr/>
+        <hr />
+        <Form.Item label="Колесо" initialValue={form.isWheelActive}>
+          <Switch
+            checked={form.isWheelActive}
+            onChange={(checked) =>
+              handleChangeFormField("isWheelActive", checked)
+            }
+          />
+        </Form.Item>
+
         <Form.Item
           label="Множитель вояджера"
           name="voyager"
@@ -145,9 +148,7 @@ function CasinoConfig() {
           <Input
             type="number"
             min={0}
-            onChange={(e) =>
-              handleChangeFormField("voyager", +e.target.value)
-            }
+            onChange={(e) => handleChangeFormField("voyager", +e.target.value)}
             prefix="X"
           />
         </Form.Item>
@@ -167,7 +168,6 @@ function CasinoConfig() {
           />
         </Form.Item>
       </Form>
-      
 
       <Space
         style={{ width: "100%", justifyContent: "flex-end", marginTop: 50 }}

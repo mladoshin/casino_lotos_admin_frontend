@@ -89,22 +89,42 @@ const Users = () => {
       render: (text) => <InlineText style={{ whiteSpace: "nowrap" }}>{text.toFixed(2)}</InlineText>,
     },
     {
-      title: "Всего заработано",
-      dataIndex: "totalEarned",
-      key: "totalEarned",
-      render: (_t, item) => (
+      title: "Проиграно за последнюю неделю",
+      dataIndex: "lastTotalLoss",
+      key: "lastTotalLoss",
+      render: (value) => (
         <InlineText style={{ whiteSpace: "nowrap" }}>
-          {item.lastTotalEarned.toFixed(2)}/{item.totalEarned.toFixed(2)}
+          {value.toFixed(2)}
+        </InlineText>
+      ),
+    },
+    {
+      title: "Заработано за последнюю неделю",
+      dataIndex: "lastTotalEarned",
+      key: "lastTotalEarned",
+      render: (value) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>
+          {value.toFixed(2)}
         </InlineText>
       ),
     },
     {
       title: "Всего проиграно",
       dataIndex: "totalLoss",
+      key: "totalLoss",
+      render: (_t, item) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>
+          {item.totalLoss.toFixed(2)}
+        </InlineText>
+      ),
+    },
+    {
+      title: "Всего заработано",
+      dataIndex: "totalEarned",
       key: "totalEarned",
       render: (_t, item) => (
         <InlineText style={{ whiteSpace: "nowrap" }}>
-          {item.lastTotalLoss.toFixed(2)}/{item.totalLoss.toFixed(2)}
+          {item.totalEarned.toFixed(2)}
         </InlineText>
       ),
     },
