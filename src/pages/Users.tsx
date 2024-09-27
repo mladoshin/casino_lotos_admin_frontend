@@ -1,6 +1,8 @@
 import {
   Button,
+  Dropdown,
   Input,
+  MenuProps,
   Modal,
   Space,
   Table,
@@ -75,23 +77,84 @@ const Users = () => {
     }
   }
 
+  const dropdownActionMenuItems = (itemId: string): MenuProps["items"] => {
+    return [
+      {
+        key: "0",
+        label: "Профиль",
+        onClick: () => navigate(itemId),
+      },
+      {
+        key: "1",
+        label: "Отправить сообщение",
+        onClick: () => setMessageModalOpen(itemId),
+      },
+      {
+        key: "2",
+        label: "Показать рефералов",
+        onClick: () => setReferralModalOpen(itemId),
+      },
+      {
+        key: "3",
+        label: "Удалить",
+        danger: true,
+        onClick: () => handleDeleteUser(itemId),
+      },
+    ];
+  };
+
   const columns: ColumnsType<any> = [
     {
       title: "ФИО",
       dataIndex: "name",
       key: "name",
-      render: (text) => <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>,
+      width: 100,
+      render: (text) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>
+      ),
+    },
+    {
+      title: "Номер телефона",
+      dataIndex: "phone",
+      key: "phone",
+      width: 100,
+      render: (text) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>
+      ),
+    },
+    {
+      title: "Почта",
+      dataIndex: "email",
+      key: "email",
+      width: 100,
+      render: (text) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>
+      ),
+    },
+    {
+      title: "TG", // Добавляем колонку TG
+      key: "telegram",
+      width: 100,
+      render: (_text, item) => (
+        <InlineText>{getUserTelegramLabel(item)}</InlineText>
+      ), // Логика для отображения TG
     },
     {
       title: "Баланс",
       dataIndex: "balance",
       key: "balance",
-      render: (text) => <InlineText style={{ whiteSpace: "nowrap" }}>{text.toFixed(2)}</InlineText>,
+      width: 100,
+      render: (text) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>
+          {text.toFixed(2)}
+        </InlineText>
+      ),
     },
     {
-      title: "Проиграно за последнюю неделю",
+      title: <Text>Проиграно за последнюю неделю</Text>,
       dataIndex: "lastTotalLoss",
       key: "lastTotalLoss",
+      width: 100,
       render: (value) => (
         <InlineText style={{ whiteSpace: "nowrap" }}>
           {value.toFixed(2)}
@@ -102,6 +165,7 @@ const Users = () => {
       title: "Заработано за последнюю неделю",
       dataIndex: "lastTotalEarned",
       key: "lastTotalEarned",
+      width: 100,
       render: (value) => (
         <InlineText style={{ whiteSpace: "nowrap" }}>
           {value.toFixed(2)}
@@ -112,6 +176,7 @@ const Users = () => {
       title: "Всего проиграно",
       dataIndex: "totalLoss",
       key: "totalLoss",
+      width: 100,
       render: (_t, item) => (
         <InlineText style={{ whiteSpace: "nowrap" }}>
           {item.totalLoss.toFixed(2)}
@@ -122,6 +187,7 @@ const Users = () => {
       title: "Всего заработано",
       dataIndex: "totalEarned",
       key: "totalEarned",
+      width: 100,
       render: (_t, item) => (
         <InlineText style={{ whiteSpace: "nowrap" }}>
           {item.totalEarned.toFixed(2)}
@@ -129,44 +195,15 @@ const Users = () => {
       ),
     },
     {
-      title: "Номер телефона",
-      dataIndex: "phone",
-      key: "phone",
-      render: (text) => <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>,
-    },
-    {
-      title: "Почта",
-      dataIndex: "email",
-      key: "email",
-      render: (text) => <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>,
-    },
-    {
-      title: "TG", // Добавляем колонку TG
-      key: "telegram",
-      render: (_text, item) => <InlineText >{getUserTelegramLabel(item)}</InlineText>, // Логика для отображения TG
-    },
-    {
       title: "",
       key: "action",
       fixed: "right",
       render: (_, item) => (
-        <Space style={{flexWrap: "wrap", width: 300}}>
-          <Button onClick={() => setMessageModalOpen(item.id)}>
-            Сообщение
-          </Button>
-          <Button onClick={() => setReferralModalOpen(item.id)}>
-            Показать рефералов
-          </Button>
-          <Button onClick={() => navigate(item.id)}>Открыть</Button>{" "}
-          {/* Кнопка "Открыть" */}
-          <Button
-            icon={<DeleteOutlined />}
-            danger
-            onClick={() => handleDeleteUser(item.id)}
-          />
-        </Space>
+        <Dropdown menu={{ items: dropdownActionMenuItems(item.id) }}>
+          <Button onClick={(e) => e.preventDefault()}>Опции</Button>
+        </Dropdown>
       ),
-    },
+    }
   ];
 
   return (
@@ -177,7 +214,7 @@ const Users = () => {
         columns={columns}
         dataSource={appState}
         rowKey={(user) => user.id}
-        scroll={{ x: "max-content" }}
+        scroll={{ x: "max-content", y: 500 }}
       />
       <Button
         type="primary"
