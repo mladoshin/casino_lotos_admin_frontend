@@ -17,8 +17,23 @@ import FinancialStatsPage from "./pages/FinancialStatsPage";
 import AccountPage from "./pages/AccountPage";
 import TransactionLogsPage from "./pages/TransactionLogsPage";
 import { StyleProvider } from "@ant-design/cssinjs";
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
+import { useEffect } from "react";
+import Cashiers from "./pages/Cashiers";
 
 export default () => {
+  const fpPromise = FingerprintJS.load()
+
+  useEffect(()=>{
+    getVisitorId()
+  }, [])
+
+  async function getVisitorId(){
+    const fp = await fpPromise
+    const result = await fp.get()
+    console.log(result.visitorId)
+  }
+
   return (
     <StyleProvider hashPriority="high">
       <App style={{ height: "100%" }} notification={{ placement: "topRight" }}>
@@ -46,6 +61,8 @@ export default () => {
             <Route path="/account" element={<AccountPage />} />
 
             <Route path="/managers" element={<Managers />} />
+            <Route path="/cashiers" element={<Cashiers />} />
+
             <Route
               path="/referral-invitations"
               element={<ReferralInvitations />}

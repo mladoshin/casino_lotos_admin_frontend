@@ -9,4 +9,5 @@ export type GameCategoryType = keyof typeof GameCategory;
 export enum UserRole {
   ADMIN = "admin",
   MANAGER = "manager",
+  CASHIER = 'cashier'
 }

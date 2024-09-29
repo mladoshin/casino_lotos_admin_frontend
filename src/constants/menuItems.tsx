@@ -25,6 +25,7 @@ export const adminMenuItems: MenuProps["items"] = [
   getItem("Пользователи", "sub1", <UsergroupAddOutlined />, [
     getItem("Все пользователи", "/users"),
     getItem("Менеджеры", "/managers"),
+    getItem("Кассиры", "/cashiers"),
     getItem("Заявки на вывод", "/withdraw-transactions"),
     getItem("Пополнения", "/incoming-transactions"),
     getItem("Финансовая статистика", "/financial-stats"),
@@ -59,4 +60,10 @@ export const managerMenuItems: MenuProps["items"] = [
       getItem("Аккаунт", "/account"),
     ]),
   ]),
+];
+
+export const cashierMenuItems: MenuProps["items"] = [
+  getItem("Уведомления", "/notifications"),
+  getItem("Заявки на вывод", "/withdraw-transactions"),
+  getItem("Пополнения", "/incoming-transactions")
 ];

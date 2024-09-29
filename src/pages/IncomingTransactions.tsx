@@ -17,7 +17,7 @@ const IncomingTransactions = () => {
 
   async function fetchData() {
     let url = "";
-    if (user?.role === UserRole.ADMIN) {
+    if (user?.role === UserRole.ADMIN || user?.role === UserRole.CASHIER) {
       url = "admin/transactions";
     } else if (user?.role === UserRole.MANAGER) {
       url = "manager/transactions";

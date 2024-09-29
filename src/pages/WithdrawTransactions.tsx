@@ -17,7 +17,7 @@ const WithdrawTransactions = () => {
 
   async function fetchData() {
     let url = "";
-    if (user?.role === UserRole.ADMIN) {
+    if ([UserRole.ADMIN, UserRole.CASHIER].includes(user?.role as any)) {
       url = "admin/withdraw-history";
     } else if (user?.role === UserRole.MANAGER) {
       url = "manager/withdraw-history";

@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^4.5.0",
     "antd": "^5.14.2",
     "axios": "^1.6.7",
     "dragula": "^3.7.3",
