@@ -20,6 +20,7 @@ import { StyleProvider } from "@ant-design/cssinjs";
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { useEffect } from "react";
 import Cashiers from "./pages/Cashiers";
+import DashboardPage from "./pages/DashboardPage";
 
 export default () => {
   const fpPromise = FingerprintJS.load()
@@ -41,6 +42,7 @@ export default () => {
           <Route path="login" element={<LoginPage />} />
 
           <Route path="/" element={<PrivateRoute />}>
+            <Route index path="/" element={<DashboardPage/>}/>
             <Route path="/games" element={<Games />} />
             <Route
               path="/incoming-transactions"

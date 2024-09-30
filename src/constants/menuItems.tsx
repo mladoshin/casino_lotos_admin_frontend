@@ -20,6 +20,7 @@ export function getItem(
 }
 
 export const adminMenuItems: MenuProps["items"] = [
+  getItem("Дашборд", "/"),
   getItem("Уведомления", "/notifications"),
   getItem("Логи депозитов и выводов", "/transaction-logs"),
   getItem("Пользователи", "sub1", <UsergroupAddOutlined />, [
