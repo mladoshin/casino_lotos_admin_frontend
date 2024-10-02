@@ -13,6 +13,7 @@ function Cashiers() {
   const [loadingCreateCashier, setLoadingCreateCashier] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [telegramId, setTelegramId] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -22,14 +23,14 @@ function Cashiers() {
     try {
       setLoadingCreateCashier(true);
       await withCredentials((headers) =>
-        api.post("admin/create-cashier", { email, password }, headers)
+        api.post("admin/create-cashier", { email, password, telegram_id: telegramId }, headers)
       );
       handleModalClose();
       await fetchData();
     } catch (error) {
       console.log(error);
     } finally {
-        setLoadingCreateCashier(false);
+      setLoadingCreateCashier(false);
     }
   }
 
@@ -137,6 +138,13 @@ function Cashiers() {
           placeholder="Введите пароль"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <Input
+          style={{ marginTop: 10 }}
+          placeholder="Введите telegram id"
+          value={telegramId}
+          onChange={(e) => setTelegramId(e.target.value)}
         />
       </Modal>
     </div>
