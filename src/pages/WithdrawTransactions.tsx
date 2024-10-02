@@ -100,7 +100,10 @@ const WithdrawTransactions = () => {
       title: "Action",
       key: "action",
       render: (_, item) => {
-        if (item.status === "pending" && user?.role === UserRole.ADMIN) {
+        // не показывать кнопки менеджерам и юзерам
+        if (user?.role !== UserRole.ADMIN && user?.role !== UserRole.CASHIER) return null;
+        
+        if (item.status === "pending") {
           return (
             <Space>
               <Button onClick={() => cancelWithdraw(item.id)}>Отменить</Button>
