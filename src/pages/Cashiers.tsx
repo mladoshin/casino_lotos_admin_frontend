@@ -23,7 +23,11 @@ function Cashiers() {
     try {
       setLoadingCreateCashier(true);
       await withCredentials((headers) =>
-        api.post("admin/create-cashier", { email, password, telegram_id: telegramId }, headers)
+        api.post(
+          "admin/create-cashier",
+          { email, password, telegram_id: telegramId },
+          headers
+        )
       );
       handleModalClose();
       await fetchData();
@@ -51,6 +55,17 @@ function Cashiers() {
       console.log(error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleDeleteCashier(id: string) {
+    try {
+      await withCredentials((headers) =>
+        api.delete(`admin/cashiers/${id}`, headers)
+      );
+      await fetchData()
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -90,7 +105,11 @@ function Cashiers() {
             padding: "0px 30px",
           }}
         >
-          <Button icon={<DeleteOutlined />} danger />
+          <Button
+            icon={<DeleteOutlined />}
+            danger
+            onClick={() => handleDeleteCashier(item.id)}
+          />
         </Space>
       ),
     },
