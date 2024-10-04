@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^4.5.0",
     "antd": "^5.14.2",
     "axios": "^1.6.7",
     "dragula": "^3.7.3",
@@ -32,6 +33,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "sass": "^1.79.3",
     "typescript": "^5.2.2",
     "vite": "^5.1.4"
   }

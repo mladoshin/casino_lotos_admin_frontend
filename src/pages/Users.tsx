@@ -1,11 +1,22 @@
-import { Button, Input, Modal, Space, Table, Typography, notification } from "antd";
+import {
+  Button,
+  Dropdown,
+  Input,
+  MenuProps,
+  Modal,
+  Space,
+  Table,
+  Typography,
+  notification,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
-import ReferralStatisticsModal from "./ReferralStatisticsModal";
+import ReferralStatisticsModal from "../components/ReferralStatisticsModal";
 import { useNavigate } from "react-router-dom"; // Добавлено для использования навигации
 import { getUserTelegramLabel } from "@utils/user"; // Добавлено для логики TG
+import InlineText from "components/InlineText";
 
 const { Text } = Typography;
 
@@ -15,7 +26,9 @@ const Users = () => {
   const [appState, setAppState] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingSendMessage, setLoadingSendMessage] = useState(false);
-  const [referralModalOpen, setReferralModalOpen] = useState<string | null>(null);
+  const [referralModalOpen, setReferralModalOpen] = useState<string | null>(
+    null
+  );
   const [notificationApi, contextHolder] = notification.useNotification();
   const navigate = useNavigate(); // Добавлено для использования навигации
 
@@ -64,74 +77,133 @@ const Users = () => {
     }
   }
 
+  const dropdownActionMenuItems = (itemId: string): MenuProps["items"] => {
+    return [
+      {
+        key: "0",
+        label: "Профиль",
+        onClick: () => navigate(itemId),
+      },
+      {
+        key: "1",
+        label: "Отправить сообщение",
+        onClick: () => setMessageModalOpen(itemId),
+      },
+      {
+        key: "2",
+        label: "Показать рефералов",
+        onClick: () => setReferralModalOpen(itemId),
+      },
+      {
+        key: "3",
+        label: "Удалить",
+        danger: true,
+        onClick: () => handleDeleteUser(itemId),
+      },
+    ];
+  };
+
   const columns: ColumnsType<any> = [
     {
       title: "ФИО",
       dataIndex: "name",
       key: "name",
-      render: (text) => <Text>{text}</Text>,
-    },
-    {
-      title: "Баланс",
-      dataIndex: "balance",
-      key: "balance",
-      render: (text) => <Text>{text.toFixed(2)}</Text>,
-    },
-    {
-      title: "Всего заработано",
-      dataIndex: "totalEarned",
-      key: "totalEarned",
-      render: (_t, item) => (
-        <Text>
-          {item.lastTotalEarned.toFixed(2)}/{item.totalEarned.toFixed(2)}
-        </Text>
-      ),
-    },
-    {
-      title: "Всего проиграно",
-      dataIndex: "totalLoss",
-      key: "totalEarned",
-      render: (_t, item) => (
-        <Text>
-          {item.lastTotalLoss.toFixed(2)}/{item.totalLoss.toFixed(2)}
-        </Text>
+      width: 100,
+      render: (text) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>
       ),
     },
     {
       title: "Номер телефона",
       dataIndex: "phone",
       key: "phone",
-      render: (text) => <Text>{text}</Text>,
+      width: 100,
+      render: (text) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>
+      ),
     },
     {
       title: "Почта",
       dataIndex: "email",
       key: "email",
-      render: (text) => <Text>{text}</Text>,
+      width: 100,
+      render: (text) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>
+      ),
     },
     {
       title: "TG", // Добавляем колонку TG
       key: "telegram",
-      render: (_text, item) => <Text>{getUserTelegramLabel(item)}</Text>, // Логика для отображения TG
+      width: 100,
+      render: (_text, item) => (
+        <InlineText>{getUserTelegramLabel(item)}</InlineText>
+      ), // Логика для отображения TG
+    },
+    {
+      title: "Баланс",
+      dataIndex: "balance",
+      key: "balance",
+      width: 100,
+      render: (text) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>
+          {text.toFixed(2)}
+        </InlineText>
+      ),
+    },
+    {
+      title: <Text>Проиграно за последнюю неделю</Text>,
+      dataIndex: "lastTotalLoss",
+      key: "lastTotalLoss",
+      width: 100,
+      render: (value) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>
+          {value.toFixed(2)}
+        </InlineText>
+      ),
+    },
+    {
+      title: "Заработано за последнюю неделю",
+      dataIndex: "lastTotalEarned",
+      key: "lastTotalEarned",
+      width: 100,
+      render: (value) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>
+          {value.toFixed(2)}
+        </InlineText>
+      ),
+    },
+    {
+      title: "Всего проиграно",
+      dataIndex: "totalLoss",
+      key: "totalLoss",
+      width: 100,
+      render: (_t, item) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>
+          {item.totalLoss.toFixed(2)}
+        </InlineText>
+      ),
+    },
+    {
+      title: "Всего заработано",
+      dataIndex: "totalEarned",
+      key: "totalEarned",
+      width: 100,
+      render: (_t, item) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>
+          {item.totalEarned.toFixed(2)}
+        </InlineText>
+      ),
     },
     {
       title: "",
       key: "action",
+      fixed: "right",
       render: (_, item) => (
-        <Space>
-          <Button onClick={() => setMessageModalOpen(item.id)}>Сообщение</Button>
-          <Button onClick={() => setReferralModalOpen(item.id)}>
-            Показать рефералов
-          </Button>
-          <Button onClick={() => navigate(item.id)}>Открыть</Button> {/* Кнопка "Открыть" */}
-          <Button
-            icon={<DeleteOutlined />}
-            danger
-            onClick={() => handleDeleteUser(item.id)}
-          />
-        </Space>
+        <Dropdown menu={{ items: dropdownActionMenuItems(item.id) }}>
+          <Button onClick={(e) => e.preventDefault()}>Опции</Button>
+        </Dropdown>
       ),
-    },
+    }
   ];
 
   return (
@@ -142,6 +214,7 @@ const Users = () => {
         columns={columns}
         dataSource={appState}
         rowKey={(user) => user.id}
+        scroll={{ x: "max-content", y: 500 }}
       />
       <Button
         type="primary"
@@ -176,12 +249,11 @@ const Users = () => {
         />
       </Modal>
 
-      {referralModalOpen && (
-        <ReferralStatisticsModal
-          userId={referralModalOpen}
-          onClose={() => setReferralModalOpen(null)}
-        />
-      )}
+      <ReferralStatisticsModal
+        open={!!referralModalOpen}
+        userId={referralModalOpen}
+        onClose={() => setReferralModalOpen(null)}
+      />
     </>
   );
 };

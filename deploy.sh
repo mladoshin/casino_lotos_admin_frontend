@@ -10,4 +10,4 @@ git pull
 npm run build:$mode
 rm -rf /usr/share/nginx/admin_frontend
 cp -r dist/ /usr/share/nginx/admin_frontend
-echo Successful
+echo Success!

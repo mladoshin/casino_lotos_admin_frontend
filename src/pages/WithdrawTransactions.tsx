@@ -17,7 +17,7 @@ const WithdrawTransactions = () => {
 
   async function fetchData() {
     let url = "";
-    if (user?.role === UserRole.ADMIN) {
+    if ([UserRole.ADMIN, UserRole.CASHIER].includes(user?.role as any)) {
       url = "admin/withdraw-history";
     } else if (user?.role === UserRole.MANAGER) {
       url = "manager/withdraw-history";
@@ -100,7 +100,10 @@ const WithdrawTransactions = () => {
       title: "Action",
       key: "action",
       render: (_, item) => {
-        if (item.status === "pending" && user?.role === UserRole.ADMIN) {
+        // не показывать кнопки менеджерам и юзерам
+        if (user?.role !== UserRole.ADMIN && user?.role !== UserRole.CASHIER) return null;
+        
+        if (item.status === "pending") {
           return (
             <Space>
               <Button onClick={() => cancelWithdraw(item.id)}>Отменить</Button>

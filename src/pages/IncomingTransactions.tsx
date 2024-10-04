@@ -17,7 +17,7 @@ const IncomingTransactions = () => {
 
   async function fetchData() {
     let url = "";
-    if (user?.role === UserRole.ADMIN) {
+    if (user?.role === UserRole.ADMIN || user?.role === UserRole.CASHIER) {
       url = "admin/transactions";
     } else if (user?.role === UserRole.MANAGER) {
       url = "manager/transactions";
@@ -106,8 +106,8 @@ const IncomingTransactions = () => {
       title: "Action",
       key: "action",
       render: (_, item) => {
-        // не показывать кнопки менеджерам
-        if (user?.role !== UserRole.ADMIN) return null;
+        // не показывать кнопки менеджерам и юзерам
+        if (user?.role !== UserRole.ADMIN && user?.role !== UserRole.CASHIER) return null;
 
         if (
           (item.type === "bank" || item.type === "cashback") &&

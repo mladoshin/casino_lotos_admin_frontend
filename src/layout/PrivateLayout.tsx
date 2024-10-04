@@ -1,7 +1,11 @@
 import { Button, Layout, Menu, Space, Spin, notification, theme } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useMemo, useState } from "react";
-import { adminMenuItems, managerMenuItems } from "../constants/menuItems";
+import {
+  adminMenuItems,
+  cashierMenuItems,
+  managerMenuItems,
+} from "../constants/menuItems";
 import { AppContext } from "../context/AppContext";
 import { api, withCredentials } from "../services/api";
 import { createSocket } from "../services/socketService";
@@ -38,6 +42,7 @@ const PrivateLayout = ({ children }: Props) => {
     if (isAsideOpen) document.body.classList.add("noscroll");
     else document.body.classList.remove("noscroll");
   }, [isAsideOpen]);
+
   useEffect(() => {
     // check if user is authenticated
     validateUser();
@@ -87,6 +92,11 @@ const PrivateLayout = ({ children }: Props) => {
         api.get("user/profile", headers)
       );
       setUser(resp.data);
+
+      if (resp.data.role === UserRole.USER) {
+        throw new Error("Forbidden!");
+      }
+      
       setLoading(false);
     } catch (err) {
       console.log(err);
@@ -116,14 +126,17 @@ const PrivateLayout = ({ children }: Props) => {
     if (!user) return [];
     const role = user.role;
     let tmpItems = [];
-    if (role === UserRole.ADMIN || role === UserRole.USER) {
+    if (role === UserRole.ADMIN) {
       tmpItems = adminMenuItems;
     } else if (role === UserRole.MANAGER) {
       tmpItems = managerMenuItems;
+    } else if (role === UserRole.CASHIER) {
+      tmpItems = cashierMenuItems;
     }
     console.log(tmpItems);
     return tmpItems;
   }, [user]);
+
   const getNameByLocation = () => {
     var temp = [];
     var pn = pathname.pathname;
@@ -229,7 +242,7 @@ const PrivateLayout = ({ children }: Props) => {
                 }
               }}
               className={isAsideOpen ? "aside--open" : ""}
-              style={{ background: 'red' }}
+              style={{ background: "red" }}
               width={250}
             >
               <Menu
