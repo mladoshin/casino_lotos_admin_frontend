@@ -17,24 +17,10 @@ import FinancialStatsPage from "./pages/FinancialStatsPage";
 import AccountPage from "./pages/AccountPage";
 import TransactionLogsPage from "./pages/TransactionLogsPage";
 import { StyleProvider } from "@ant-design/cssinjs";
-import FingerprintJS from '@fingerprintjs/fingerprintjs'
-import { useEffect } from "react";
 import Cashiers from "./pages/Cashiers";
 import DashboardPage from "./pages/DashboardPage";
 
 export default () => {
-  const fpPromise = FingerprintJS.load()
-
-  useEffect(()=>{
-    getVisitorId()
-  }, [])
-
-  async function getVisitorId(){
-    const fp = await fpPromise
-    const result = await fp.get()
-    console.log(result.visitorId)
-  }
-
   return (
     <StyleProvider hashPriority="high">
       <App style={{ height: "100%" }} notification={{ placement: "topRight" }}>
