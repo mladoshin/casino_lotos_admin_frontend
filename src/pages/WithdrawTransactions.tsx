@@ -79,7 +79,7 @@ const WithdrawTransactions = () => {
       title: "Баланс до",
       key: "balance_before",
       render: (_t: any, item: any) => {
-        const userBeforeBalance = item?.userAfterBalance - item?.amount;
+        const userBeforeBalance = item?.userAfterBalance + item?.amount;
         return <Text>{userBeforeBalance < 0 ? "N/A" : userBeforeBalance}</Text>;
       },
     },
