@@ -223,12 +223,12 @@ const PrivateLayout = ({ children }: Props) => {
             <p style={{ margin: "0" }}>{getNameByLocation()}</p>
           </Layout>
         </Content>
-        <Content className="main-c" style={{ padding: "48px" }}>
+        <Content className="main-c">
           <Layout
             style={{
               padding: "24px 0",
-              background: colorBgContainer,
-              borderRadius: borderRadiusLG,
+              background: '#fff',
+              borderRadius: 0,
             }}
           >
             <Sider
@@ -260,7 +260,7 @@ const PrivateLayout = ({ children }: Props) => {
             </Content>
           </Layout>
         </Content>
-        <Footer style={{ textAlign: "center" }}>
+        <Footer style={{ textAlign: "center", background: '#fff', padding: '0px 0px 10px 0px' }}>
           <Button onClick={handleLogout}>Выйти</Button>
         </Footer>
       </Layout>
