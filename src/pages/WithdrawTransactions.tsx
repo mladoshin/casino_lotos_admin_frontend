@@ -76,6 +76,19 @@ const WithdrawTransactions = () => {
       dataIndex: "amount",
     },
     {
+      title: "Баланс до",
+      key: "balance_before",
+      render: (_t: any, item: any) => {
+        const userBeforeBalance = item?.userAfterBalance - item?.amount;
+        return <Text>{userBeforeBalance < 0 ? "N/A" : userBeforeBalance}</Text>;
+      },
+    },
+    {
+      title: "Баланс после",
+      key: "balance_after",
+      render: (_t: any, item: any) => <Text>{item?.userAfterBalance}</Text>,
+    },
+    {
       title: "Метод",
       key: "method",
       dataIndex: "method",
