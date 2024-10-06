@@ -93,11 +93,17 @@ const IncomingTransactions = () => {
       dataIndex: "amount",
     },
     {
-      title: "Баланс",
-      key: "amount",
-      render: (_t: any, item: any) => (
-        <Text>{`${item?.userAfterBalance-item?.amount} -> ${item?.userAfterBalance}`}</Text>
-      )
+      title: "Баланс до",
+      key: "balance_before",
+      render: (_t: any, item: any) => {
+        const userBeforeBalance = item?.userAfterBalance - item?.amount;
+        return <Text>{userBeforeBalance < 0 ? "N/A" : userBeforeBalance}</Text>;
+      },
+    },
+    {
+      title: "Баланс после",
+      key: "balance_after",
+      render: (_t: any, item: any) => <Text>{item?.userAfterBalance}</Text>,
     },
     {
       title: "Имя покупателя",
@@ -114,7 +120,8 @@ const IncomingTransactions = () => {
       key: "action",
       render: (_, item) => {
         // не показывать кнопки менеджерам и юзерам
-        if (user?.role !== UserRole.ADMIN && user?.role !== UserRole.CASHIER) return null;
+        if (user?.role !== UserRole.ADMIN && user?.role !== UserRole.CASHIER)
+          return null;
 
         if (
           (item.type === "bank" || item.type === "cashback") &&
