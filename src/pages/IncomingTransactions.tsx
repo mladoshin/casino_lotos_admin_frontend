@@ -93,6 +93,13 @@ const IncomingTransactions = () => {
       dataIndex: "amount",
     },
     {
+      title: "Баланс",
+      key: "amount",
+      render: (_t: any, item: any) => (
+        <Text>{`${item?.userAfterBalance-item?.amount} -> ${item?.userAfterBalance}`}</Text>
+      )
+    },
+    {
       title: "Имя покупателя",
       key: "sender_name",
       dataIndex: "sender_name",
