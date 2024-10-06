@@ -80,7 +80,7 @@ const WithdrawTransactions = () => {
       key: "balance_before",
       render: (_t: any, item: any) => {
         let userBeforeBalance = item.userAfterBalance + item.amount;
-        if(item.status === 'cancelled'){
+        if(item.status === 'cancelled' || item.status === 'pending'){
           userBeforeBalance = item.userAfterBalance
         }
         return <Text>{userBeforeBalance < 0 ? "N/A" : userBeforeBalance}</Text>;
@@ -89,7 +89,7 @@ const WithdrawTransactions = () => {
     {
       title: "Баланс после",
       key: "balance_after",
-      render: (_t: any, item: any) => <Text>{item?.userAfterBalance}</Text>,
+      render: (_t: any, item: any) => item.status !== 'pending' && <Text>{item?.userAfterBalance}</Text>,
     },
     {
       title: "Метод",
