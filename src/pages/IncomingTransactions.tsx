@@ -97,8 +97,11 @@ const IncomingTransactions = () => {
       key: "balance_before",
       render: (_t: any, item: any) => {
         let userBeforeBalance = item?.userAfterBalance - item?.amount;
-        if(item.status === 'cancelled'){
-          userBeforeBalance = item.userAfterBalance
+        if (
+          item.status === "cancelled" ||
+          item.status === "waiting_confirmation"
+        ) {
+          userBeforeBalance = item.userAfterBalance;
         }
         return <Text>{userBeforeBalance < 0 ? "N/A" : userBeforeBalance}</Text>;
       },
@@ -106,7 +109,10 @@ const IncomingTransactions = () => {
     {
       title: "Баланс после",
       key: "balance_after",
-      render: (_t: any, item: any) => <Text>{item?.userAfterBalance}</Text>,
+      render: (_t: any, item: any) =>
+        item.status !== "waiting_confirmation" && (
+          <Text>{item?.userAfterBalance}</Text>
+        ),
     },
     {
       title: "Имя покупателя",
