@@ -79,7 +79,10 @@ const WithdrawTransactions = () => {
       title: "Баланс до",
       key: "balance_before",
       render: (_t: any, item: any) => {
-        const userBeforeBalance = item?.userAfterBalance + item?.amount;
+        let userBeforeBalance = item.userAfterBalance + item.amount;
+        if(item.status === 'cancelled'){
+          userBeforeBalance = item.userAfterBalance
+        }
         return <Text>{userBeforeBalance < 0 ? "N/A" : userBeforeBalance}</Text>;
       },
     },
