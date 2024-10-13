@@ -39,6 +39,17 @@ function Managers() {
     setPassword("");
   };
 
+  async function handleDeleteManager(id: string) {
+    try {
+      await withCredentials((headers) =>
+        api.delete(`admin/managers/${id}`, headers)
+      );
+      await fetchData();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   async function fetchData() {
     try {
       setLoading(true);
@@ -89,7 +100,11 @@ function Managers() {
             padding: "0px 30px",
           }}
         >
-          <Button icon={<DeleteOutlined />} danger />
+          <Button
+            icon={<DeleteOutlined />}
+            danger
+            onClick={() => handleDeleteManager(item.id)}
+          />
         </Space>
       ),
     },
