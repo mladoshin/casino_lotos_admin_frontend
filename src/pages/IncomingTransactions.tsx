@@ -178,7 +178,13 @@ const IncomingTransactions = () => {
       key: "action",
       fixed: "right",
       render: (_, item) => {
-        if (item.status === "waiting_confirmation") {
+        // не показывать кнопки менеджерам и юзерам
+        if (user?.role !== UserRole.ADMIN && user?.role !== UserRole.CASHIER) return null;
+
+        if (
+          (item.type === "bank" || item.type === "cashback") &&
+          item.status === "waiting_confirmation"
+        ) {
           return (
             <Dropdown menu={{ items: dropdownActionMenuItems(item) }}>
               <Button onClick={(e) => e.preventDefault()}>Опции</Button>

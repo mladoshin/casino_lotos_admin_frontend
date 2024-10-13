@@ -152,9 +152,9 @@ const WithdrawTransactions = () => {
       key: "action",
       fixed: "right",
       render: (_, item) => {
-        if (user?.role !== UserRole.ADMIN && user?.role !== UserRole.CASHIER)
-          return null;
-
+        // не показывать кнопки менеджерам и юзерам
+        if (user?.role !== UserRole.ADMIN && user?.role !== UserRole.CASHIER) return null;
+        
         if (item.status === "pending") {
           return (
             <Dropdown menu={{ items: dropdownActionMenuItems(item) }}>
