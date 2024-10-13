@@ -1,4 +1,12 @@
-import { App, Button, Space, Table, Typography } from "antd";
+import {
+  App,
+  Button,
+  Dropdown,
+  MenuProps,
+  Space,
+  Table,
+  Typography,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useContext, useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
@@ -57,6 +65,41 @@ const IncomingTransactions = () => {
     await fetchData();
   }
 
+  const dropdownActionMenuItems = (item: any): MenuProps["items"] => {
+    if (item.type === "bank" || item.type === "cashback") {
+      return [
+        {
+          key: "0",
+          label: "Подтвердить",
+          onClick: () => confirmTransaction(item.id),
+        },
+        {
+          key: "1",
+          label: "Отклонить",
+          danger: true,
+          onClick: () => cancelTransaction(item.id),
+        },
+      ];
+    } else if (item.type === "crypto" && item.status === "pending") {
+      return [
+        {
+          key: "0",
+          label: "Оплатить (тест)",
+          onClick: () => {
+            (window as any)
+              .open(
+                `https://app.cryptocloud.plus/payment/transaction/${item.invoice_id}`,
+                "_blank"
+              )
+              .focus();
+          },
+        },
+      ];
+    } else {
+      return [];
+    }
+  };
+
   const columns: ColumnsType<any> = [
     {
       title: "Пользователь",
@@ -80,6 +123,7 @@ const IncomingTransactions = () => {
       title: "Метод",
       key: "method",
       dataIndex: "method",
+      width: 80
     },
     {
       title: "Реквизиты получателя",
@@ -91,20 +135,48 @@ const IncomingTransactions = () => {
       title: "Сумма",
       key: "amount",
       dataIndex: "amount",
+      width: 120
+    },
+    {
+      title: "Баланс до",
+      key: "balance_before",
+      width: 120,
+      render: (_t: any, item: any) => {
+        let userBeforeBalance = item?.userAfterBalance - item?.amount;
+        if (
+          item.status === "cancelled" ||
+          item.status === "waiting_confirmation"
+        ) {
+          userBeforeBalance = item.userAfterBalance;
+        }
+        return <Text>{userBeforeBalance < 0 ? "N/A" : userBeforeBalance}</Text>;
+      },
+    },
+    {
+      title: "Баланс после",
+      key: "balance_after",
+      width: 120,
+      render: (_t: any, item: any) =>
+        item.status !== "waiting_confirmation" && (
+          <Text>{item?.userAfterBalance}</Text>
+        ),
     },
     {
       title: "Имя покупателя",
       key: "sender_name",
       dataIndex: "sender_name",
+      width: 120
     },
     {
       title: "Статус",
       key: "status",
       dataIndex: "status",
+      width: 'min-content'
     },
     {
-      title: "Action",
+      title: "",
       key: "action",
+      fixed: "right",
       render: (_, item) => {
         // не показывать кнопки менеджерам и юзерам
         if (user?.role !== UserRole.ADMIN && user?.role !== UserRole.CASHIER) return null;
@@ -114,29 +186,9 @@ const IncomingTransactions = () => {
           item.status === "waiting_confirmation"
         ) {
           return (
-            <Space>
-              <Button onClick={() => confirmTransaction(item.id)}>
-                Подтвердить
-              </Button>
-              <Button onClick={() => cancelTransaction(item.id)}>
-                Отклонить
-              </Button>
-            </Space>
-          );
-        } else if (item.type === "crypto" && item.status === "pending") {
-          return (
-            <Button
-              onClick={() =>
-                (window as any)
-                  .open(
-                    `https://app.cryptocloud.plus/payment/transaction/${item.invoice_id}`,
-                    "_blank"
-                  )
-                  .focus()
-              }
-            >
-              Оплатить (тест)
-            </Button>
+            <Dropdown menu={{ items: dropdownActionMenuItems(item) }}>
+              <Button onClick={(e) => e.preventDefault()}>Опции</Button>
+            </Dropdown>
           );
         }
         return null;
@@ -149,6 +201,7 @@ const IncomingTransactions = () => {
       columns={columns}
       dataSource={appState}
       rowKey={(meditation) => meditation.id}
+      scroll={{ x: "max-content", y: 500 }}
     />
   );
 };

@@ -21,6 +21,7 @@ import Cashiers from "./pages/Cashiers";
 import DashboardPage from "./pages/DashboardPage";
 
 export default () => {
+
   return (
     <StyleProvider hashPriority="high">
       <App style={{ height: "100%" }} notification={{ placement: "topRight" }}>

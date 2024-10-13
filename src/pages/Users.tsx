@@ -10,17 +10,20 @@ import {
   notification,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
 import ReferralStatisticsModal from "../components/ReferralStatisticsModal";
 import { useNavigate } from "react-router-dom"; // Добавлено для использования навигации
 import { getUserTelegramLabel } from "@utils/user"; // Добавлено для логики TG
 import InlineText from "components/InlineText";
+import { AppContext } from "../context/AppContext";
+import { UserRole } from "@customTypes/enum/UserRole";
 
 const { Text } = Typography;
 
 const Users = () => {
+  const {user} = useContext(AppContext);
   const [messageModalOpen, setMessageModalOpen] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
   const [appState, setAppState] = useState([]);
@@ -33,13 +36,21 @@ const Users = () => {
   const navigate = useNavigate(); // Добавлено для использования навигации
 
   useEffect(() => {
+    if(!user) return;
     fetchData();
-  }, []);
+  }, [user]);
 
   async function fetchData() {
+    let url = "";
+    if(user.role===UserRole.MANAGER){
+      url = '/manager/referrals'
+    }else{
+      url = '/user'
+    }
+
     try {
       setLoading(true);
-      const resp = await withCredentials((headers) => api.get("user", headers));
+      const resp = await withCredentials((headers) => api.get(url, headers));
       setAppState(resp.data);
     } catch (error) {
       console.log(error);
