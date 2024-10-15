@@ -30,6 +30,7 @@ export const adminMenuItems: MenuProps["items"] = [
     getItem("Заявки на вывод", "/withdraw-transactions"),
     getItem("Пополнения", "/incoming-transactions"),
     getItem("Финансовая статистика", "/financial-stats"),
+    getItem("История игр", "/game-history"),
 
   ]),
   getItem("Игры", "sub2", <UsergroupAddOutlined />, [
@@ -41,7 +42,6 @@ export const adminMenuItems: MenuProps["items"] = [
     getItem("Реквизиты", "/payment-details"),
     getItem("Аккаунт", "/account"),
     getItem("Конфигурация", "/casino-config"),
-
   ]),
 ];
 
@@ -64,7 +64,13 @@ export const managerMenuItems: MenuProps["items"] = [
 ];
 
 export const cashierMenuItems: MenuProps["items"] = [
+  getItem("Дашборд", "/"),
   getItem("Уведомления", "/notifications"),
+  getItem("Логи депозитов и выводов", "/transaction-logs"),
+  getItem("Пользователи", "sub1", <UsergroupAddOutlined />, [
+    getItem("Все пользователи", "/users"),
+    getItem("История игр", "/game-history"),
+  ]),
   getItem("Заявки на вывод", "/withdraw-transactions"),
-  getItem("Пополнения", "/incoming-transactions")
+  getItem("Пополнения", "/incoming-transactions"),
 ];

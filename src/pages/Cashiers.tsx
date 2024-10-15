@@ -5,6 +5,7 @@ import { ColumnsType } from "antd/es/table";
 const { Text } = Typography;
 import { DeleteOutlined } from "@ant-design/icons";
 import { getUserTelegramLabel } from "@utils/user";
+import Swal from "sweetalert2";
 
 function Cashiers() {
   const [cashiers, setCashiers] = useState<any[]>([]);
@@ -33,6 +34,7 @@ function Cashiers() {
       await fetchData();
     } catch (error) {
       console.log(error);
+      Swal.fire('Ошибка', error?.response?.data?.message?.join("\n"), 'error');
     } finally {
       setLoadingCreateCashier(false);
     }

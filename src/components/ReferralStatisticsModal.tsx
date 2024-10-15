@@ -5,6 +5,7 @@ import { getUserLabel } from "@utils/user";
 import InlineText from "./InlineText";
 import { User } from "@customTypes/entity/User";
 import { CurrencyFormatter } from "@utils/common";
+import { ColumnsType } from "antd/es/table";
 
 const { Text } = Typography;
 
@@ -64,7 +65,7 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
     }
   }
 
-  const cashbackReferralsTableColumns = [
+  const cashbackReferralsTableColumns: ColumnsType<any> = [
     {
       title: "Пользователь",
       key: "email",
@@ -210,7 +211,7 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
 
       <h2>Все рефералы</h2>
       <Table
-        columns={allReferralsTableColumns}
+        columns={allReferralsTableColumns as any}
         dataSource={allReferrals}
         scroll={{ x: "max-content" }}
       />

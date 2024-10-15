@@ -20,11 +20,18 @@ import useGetUsers from "../hooks/useGetUsers";
 import dayjs from "dayjs";
 import InlineText from "components/InlineText";
 import { CurrencyFormatter } from "@utils/common";
+import { User } from "@customTypes/entity/User";
 
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
-const IncomingTransactions = () => {
+interface IncomingTransactionsProps {
+  user?: User;
+}
+
+const IncomingTransactions = ({
+  user: selectedUser,
+}: IncomingTransactionsProps) => {
   const { user } = useContext(AppContext);
   const [appState, setAppState] = useState();
   const { users, loading: loadingUsres } = useGetUsers({ fetchOnMount: true });
@@ -40,7 +47,7 @@ const IncomingTransactions = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [selectedUser]);
 
   async function fetchData() {
     let url = "";
@@ -55,6 +62,11 @@ const IncomingTransactions = () => {
       if (value === "" || value === null || value === undefined) continue;
       params[key] = value;
     }
+
+    if (selectedUser) {
+      params["userId"] = selectedUser.id;
+    }
+
     setLoading(true);
     try {
       const resp = await withCredentials((headers) =>
@@ -184,7 +196,13 @@ const IncomingTransactions = () => {
         ) {
           userBeforeBalance = item.userAfterBalance;
         }
-        return <InlineText>{userBeforeBalance < 0 ? "N/A" : CurrencyFormatter.format(userBeforeBalance)}</InlineText>;
+        return (
+          <InlineText>
+            {userBeforeBalance < 0
+              ? "N/A"
+              : CurrencyFormatter.format(userBeforeBalance)}
+          </InlineText>
+        );
       },
     },
     {
@@ -194,7 +212,9 @@ const IncomingTransactions = () => {
       align: "right",
       render: (_t: any, item: any) =>
         item.status !== "waiting_confirmation" && (
-          <InlineText>{CurrencyFormatter.format(item?.userAfterBalance)}</InlineText>
+          <InlineText>
+            {CurrencyFormatter.format(item?.userAfterBalance)}
+          </InlineText>
         ),
     },
     {
@@ -238,6 +258,8 @@ const IncomingTransactions = () => {
       <Space direction="horizontal" style={{ marginBottom: 16 }}>
         <div style={{ minWidth: 200 }}>
           <UserSelect
+            disabled={!!selectedUser}
+            defaultValue={selectedUser ? getUserLabel(selectedUser) : null}
             users={users}
             loading={loadingUsres}
             onChange={(val) => setFilter((f) => ({ ...f, userId: val }))}

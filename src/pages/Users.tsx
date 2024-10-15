@@ -15,10 +15,13 @@ import { api, withCredentials } from "../services/api";
 import ReferralStatisticsModal from "../components/ReferralStatisticsModal";
 import { useNavigate } from "react-router-dom"; // Добавлено для использования навигации
 import { getUserTelegramLabel } from "@utils/user"; // Добавлено для логики TG
-import InlineText from "components/InlineText";
+import InlineText from "../components/InlineText";
 import UserSelect from "../components/UserSelect/UserSelect";
 import useGetUsers from "../hooks/useGetUsers";
 import { CurrencyFormatter } from "@utils/common";
+import UserTransactionsModal from "../components/UserTransactionsModal/UserTransactionsModal";
+import { User } from "@customTypes/entity/User";
+import UserGameHistoryModal from "../components/UserGameHistoryModal/UserGameHistoryModal";
 
 const { Text } = Typography;
 
@@ -29,6 +32,16 @@ const Users = () => {
   const [referralModalOpen, setReferralModalOpen] = useState<string | null>(
     null
   );
+  const [transactionsModalOpen, setTransactionsModalOpen] = useState<any>({
+    open: false,
+    user: null,
+    type: null,
+  });
+  const [gameHistoryModalOpen, setGameHistoryModalOpen] = useState<any>({
+    open: false,
+    user: null,
+  });
+
   const [notificationApi, contextHolder] = notification.useNotification();
   const navigate = useNavigate(); // Добавлено для использования навигации
   const {
@@ -78,28 +91,57 @@ const Users = () => {
     }
   }
 
-  const dropdownActionMenuItems = (itemId: string): MenuProps["items"] => {
+  const dropdownActionMenuItems = (item: User): MenuProps["items"] => {
     return [
       {
         key: "0",
         label: "Профиль",
-        onClick: () => navigate(itemId),
+        onClick: () => navigate(item.id),
       },
       {
         key: "1",
         label: "Отправить сообщение",
-        onClick: () => setMessageModalOpen(itemId),
+        onClick: () => setMessageModalOpen(item.id),
       },
       {
         key: "2",
         label: "Показать рефералов",
-        onClick: () => setReferralModalOpen(itemId),
+        onClick: () => setReferralModalOpen(item.id),
       },
       {
         key: "3",
+        label: "Депозиты",
+        onClick: () =>
+          setTransactionsModalOpen({
+            open: true,
+            user: item,
+            type: "deposits",
+          }),
+      },
+      {
+        key: "4",
+        label: "Выводы",
+        onClick: () =>
+          setTransactionsModalOpen({
+            open: true,
+            user: item,
+            type: "withdrawals",
+          }),
+      },
+      {
+        key: "5",
+        label: "История игр",
+        onClick: () =>
+          setGameHistoryModalOpen({
+            open: true,
+            user: item,
+          }),
+      },
+      {
+        key: "6",
         label: "Удалить",
         danger: true,
-        onClick: () => handleDeleteUser(itemId),
+        onClick: () => handleDeleteUser(item.id),
       },
     ];
   };
@@ -145,7 +187,7 @@ const Users = () => {
       dataIndex: "balance",
       key: "balance",
       width: 100,
-      align: 'right',
+      align: "right",
       render: (text) => (
         <InlineText style={{ whiteSpace: "nowrap", textAlign: "right" }}>
           {CurrencyFormatter.format(text)}
@@ -156,10 +198,10 @@ const Users = () => {
       title: <Text>Проиграно за последнюю неделю</Text>,
       key: "lastTotalLoss",
       width: 100,
-      align: 'right',
+      align: "right",
       render: (_: any, item: any) => (
         <InlineText style={{ whiteSpace: "nowrap" }}>
-          {CurrencyFormatter.format(item.totalLoss-item.lastTotalLoss)}
+          {CurrencyFormatter.format(item.totalLoss - item.lastTotalLoss)}
         </InlineText>
       ),
     },
@@ -167,8 +209,8 @@ const Users = () => {
       title: "Заработано за последнюю неделю",
       key: "lastTotalEarned",
       width: 100,
-      align: 'right',
-      render: (_:any, item: any) => (
+      align: "right",
+      render: (_: any, item: any) => (
         <InlineText style={{ whiteSpace: "nowrap", textAlign: "right" }}>
           {CurrencyFormatter.format(item.totalEarned - item.lastTotalEarned)}
         </InlineText>
@@ -179,7 +221,7 @@ const Users = () => {
       dataIndex: "totalLoss",
       key: "totalLoss",
       width: 100,
-      align: 'right',
+      align: "right",
       render: (_t, item) => (
         <InlineText style={{ whiteSpace: "nowrap", textAlign: "right" }}>
           {CurrencyFormatter.format(item.totalLoss)}
@@ -191,7 +233,7 @@ const Users = () => {
       dataIndex: "totalEarned",
       key: "totalEarned",
       width: 100,
-      align: 'right',
+      align: "right",
       render: (_t, item) => (
         <InlineText style={{ whiteSpace: "nowrap", textAlign: "right" }}>
           {CurrencyFormatter.format(item.totalEarned)}
@@ -203,7 +245,7 @@ const Users = () => {
       key: "action",
       fixed: "right",
       render: (_, item) => (
-        <Dropdown menu={{ items: dropdownActionMenuItems(item.id) }}>
+        <Dropdown menu={{ items: dropdownActionMenuItems(item) }}>
           <Button onClick={(e) => e.preventDefault()}>Опции</Button>
         </Dropdown>
       ),
@@ -233,7 +275,7 @@ const Users = () => {
       </Space>
       <Table
         loading={loadingUsers}
-        columns={columns}
+        columns={columns as any}
         dataSource={users}
         rowKey={(user) => user.id}
         scroll={{ x: "max-content", y: 500 }}
@@ -275,6 +317,21 @@ const Users = () => {
         open={!!referralModalOpen}
         userId={referralModalOpen}
         onClose={() => setReferralModalOpen(null)}
+      />
+
+      <UserTransactionsModal
+        open={!!transactionsModalOpen.open}
+        user={transactionsModalOpen.user}
+        type={transactionsModalOpen.type}
+        onClose={() =>
+          setTransactionsModalOpen({ open: false, user: null, type: null })
+        }
+      />
+
+      <UserGameHistoryModal
+        open={!!gameHistoryModalOpen.open}
+        user={gameHistoryModalOpen.user}
+        onClose={() => setGameHistoryModalOpen({ open: false, user: null })}
       />
     </>
   );

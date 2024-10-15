@@ -19,10 +19,17 @@ import useGetUsers from "../hooks/useGetUsers";
 import dayjs from "dayjs";
 import InlineText from "components/InlineText";
 import { CurrencyFormatter } from "@utils/common";
+import { User } from "@customTypes/entity/User";
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
-const WithdrawTransactions = () => {
+interface WithdrawTransactionsProps {
+  user?: User;
+}
+
+const WithdrawTransactions = ({
+  user: selectedUser,
+}: WithdrawTransactionsProps) => {
   const { user } = useContext(AppContext);
   const [appState, setAppState] = useState();
   const { users, loading: loadingUsres } = useGetUsers({ fetchOnMount: true });
@@ -38,7 +45,7 @@ const WithdrawTransactions = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [selectedUser]);
 
   async function fetchData() {
     let url = "";
@@ -53,6 +60,11 @@ const WithdrawTransactions = () => {
       if (value === "" || value === null || value === undefined) continue;
       params[key] = value;
     }
+
+    if (selectedUser) {
+      params["userId"] = selectedUser.id;
+    }
+
     setLoading(true);
     try {
       const resp = await withCredentials((headers) =>
@@ -153,7 +165,13 @@ const WithdrawTransactions = () => {
         if (item.status === "cancelled" || item.status === "pending") {
           userBeforeBalance = item.userAfterBalance;
         }
-        return <InlineText>{userBeforeBalance < 0 ? "N/A" : CurrencyFormatter.format(userBeforeBalance)}</InlineText>;
+        return (
+          <InlineText>
+            {userBeforeBalance < 0
+              ? "N/A"
+              : CurrencyFormatter.format(userBeforeBalance)}
+          </InlineText>
+        );
       },
     },
     {
@@ -162,7 +180,11 @@ const WithdrawTransactions = () => {
       width: 120,
       align: "right",
       render: (_t: any, item: any) =>
-        item.status !== "pending" && <InlineText>{CurrencyFormatter.format(item?.userAfterBalance)}</InlineText>,
+        item.status !== "pending" && (
+          <InlineText>
+            {CurrencyFormatter.format(item?.userAfterBalance)}
+          </InlineText>
+        ),
     },
     {
       title: "Метод",
@@ -215,6 +237,8 @@ const WithdrawTransactions = () => {
       <Space direction="horizontal" style={{ marginBottom: 16 }}>
         <div style={{ minWidth: 200 }}>
           <UserSelect
+            disabled={!!selectedUser}
+            defaultValue={selectedUser ? getUserLabel(selectedUser) : null}
             users={users}
             loading={loadingUsres}
             onChange={(val) => setFilter((f) => ({ ...f, userId: val }))}
