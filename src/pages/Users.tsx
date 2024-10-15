@@ -12,7 +12,6 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { api, withCredentials } from "../services/api";
-import { DeleteOutlined } from "@ant-design/icons";
 import ReferralStatisticsModal from "../components/ReferralStatisticsModal";
 import { useNavigate } from "react-router-dom"; // Добавлено для использования навигации
 import { getUserTelegramLabel } from "@utils/user"; // Добавлено для логики TG
