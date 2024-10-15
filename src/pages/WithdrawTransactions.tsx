@@ -1,15 +1,40 @@
-import { Button, Dropdown, MenuProps, Space, Table, Typography } from "antd";
+import {
+  Button,
+  DatePicker,
+  Dropdown,
+  MenuProps,
+  Select,
+  Space,
+  Table,
+  Typography,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useContext, useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import { AppContext } from "../context/AppContext";
 import { UserRole } from "../routes/types";
 import { getUserLabel } from "@utils/user";
+import UserSelect from "components/UserSelect/UserSelect";
+import useGetUsers from "../hooks/useGetUsers";
+import dayjs from "dayjs";
+import InlineText from "components/InlineText";
+import { CurrencyFormatter } from "@utils/common";
 const { Text } = Typography;
+const { RangePicker } = DatePicker;
 
 const WithdrawTransactions = () => {
   const { user } = useContext(AppContext);
   const [appState, setAppState] = useState();
+  const { users, loading: loadingUsres } = useGetUsers({ fetchOnMount: true });
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [filter, setFilter] = useState<any>({
+    userId: null,
+    date_begin: null,
+    date_end: null,
+    status: null,
+    method: null,
+  });
 
   useEffect(() => {
     fetchData();
@@ -23,12 +48,21 @@ const WithdrawTransactions = () => {
       url = "manager/withdraw-history";
     }
 
+    const params = {};
+    for (const [key, value] of Object.entries(filter)) {
+      if (value === "" || value === null || value === undefined) continue;
+      params[key] = value;
+    }
+    setLoading(true);
     try {
-      const resp = await withCredentials((headers) => api.get(url, headers));
+      const resp = await withCredentials((headers) =>
+        api.get(url, { ...headers, params })
+      );
       setAppState(resp.data.data);
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
   }
 
   async function confirmWithdraw(transactionId: string) {
@@ -102,25 +136,33 @@ const WithdrawTransactions = () => {
       key: "amount",
       dataIndex: "amount",
       width: 120,
+      align: "right",
+      render: (value) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>
+          {CurrencyFormatter.format(value)}
+        </InlineText>
+      ),
     },
     {
       title: "Баланс до",
       key: "balance_before",
       width: 120,
+      align: "right",
       render: (_t: any, item: any) => {
         let userBeforeBalance = item.userAfterBalance + item.amount;
         if (item.status === "cancelled" || item.status === "pending") {
           userBeforeBalance = item.userAfterBalance;
         }
-        return <Text>{userBeforeBalance < 0 ? "N/A" : userBeforeBalance}</Text>;
+        return <InlineText>{userBeforeBalance < 0 ? "N/A" : CurrencyFormatter.format(userBeforeBalance)}</InlineText>;
       },
     },
     {
       title: "Баланс после",
       key: "balance_after",
       width: 120,
+      align: "right",
       render: (_t: any, item: any) =>
-        item.status !== "pending" && <Text>{item?.userAfterBalance}</Text>,
+        item.status !== "pending" && <InlineText>{CurrencyFormatter.format(item?.userAfterBalance)}</InlineText>,
     },
     {
       title: "Метод",
@@ -139,7 +181,7 @@ const WithdrawTransactions = () => {
       key: "requisites",
       width: 150,
       render: (_text, item) => (
-        <Text>{item.card || item.sbp || item.crypto_address}</Text>
+        <InlineText>{item.card || item.sbp || item.crypto_address}</InlineText>
       ),
     },
     {
@@ -153,8 +195,9 @@ const WithdrawTransactions = () => {
       fixed: "right",
       render: (_, item) => {
         // не показывать кнопки менеджерам и юзерам
-        if (user?.role !== UserRole.ADMIN && user?.role !== UserRole.CASHIER) return null;
-        
+        if (user?.role !== UserRole.ADMIN && user?.role !== UserRole.CASHIER)
+          return null;
+
         if (item.status === "pending") {
           return (
             <Dropdown menu={{ items: dropdownActionMenuItems(item) }}>
@@ -168,12 +211,82 @@ const WithdrawTransactions = () => {
   ];
 
   return (
-    <Table
-      columns={columns}
-      dataSource={appState}
-      rowKey={(meditation) => meditation.id}
-      scroll={{ x: "max-content", y: 500 }}
-    />
+    <div>
+      <Space direction="horizontal" style={{ marginBottom: 16 }}>
+        <div style={{ minWidth: 200 }}>
+          <UserSelect
+            users={users}
+            loading={loadingUsres}
+            onChange={(val) => setFilter((f) => ({ ...f, userId: val }))}
+          />
+        </div>
+        <RangePicker
+          style={{ minWidth: 200 }}
+          showTime={{
+            defaultOpenValue: [dayjs().startOf("day"), dayjs().endOf("day")],
+          }}
+          value={
+            filter.date_begin
+              ? [dayjs(filter.date_begin), dayjs(filter.date_end)]
+              : undefined
+          }
+          onChange={(dates) => {
+            let newValue = ["", ""];
+            if (dates) {
+              newValue = [dates[0].toISOString(), dates[1].toISOString()];
+            }
+
+            setFilter((f) => ({
+              ...f,
+              date_begin: newValue[0],
+              date_end: newValue[1],
+            }));
+          }}
+        />
+
+        <Select
+          placeholder="Статус"
+          style={{ width: 100 }}
+          onChange={(val) => setFilter((f) => ({ ...f, status: val }))}
+          onClear={() => setFilter((f) => ({ ...f, status: null }))}
+          allowClear
+          options={[
+            { label: "Pending", value: "pending" },
+            { label: "Success", value: "success" },
+            { label: "Cancelled", value: "cancelled" },
+          ]}
+        />
+
+        <Select
+          placeholder="Метод"
+          style={{ width: 120 }}
+          onChange={(val) => setFilter((f) => ({ ...f, method: val }))}
+          onClear={() => setFilter((f) => ({ ...f, method: null }))}
+          allowClear
+          options={[
+            { label: "Card", value: "card" },
+            { label: "SBP", value: "sbp" },
+            { label: "Crypto", value: "crypto" },
+          ]}
+        />
+
+        <Button
+          type="primary"
+          onClick={fetchData}
+          loading={loading}
+          disabled={loading}
+        >
+          Поиск
+        </Button>
+      </Space>
+      <Table
+        loading={loading}
+        columns={columns}
+        dataSource={appState}
+        rowKey={(meditation) => meditation.id}
+        scroll={{ x: "max-content", y: 500 }}
+      />
+    </div>
   );
 };
 

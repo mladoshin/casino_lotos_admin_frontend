@@ -8,7 +8,9 @@ import { ColumnsType } from "antd/es/table";
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
 import dayjs from "dayjs";
-import { getUserTelegramLabel } from "@utils/user";
+import { getUserLabel, getUserTelegramLabel } from "@utils/user";
+import UserSelect from "components/UserSelect/UserSelect";
+import useGetUsers from "../hooks/useGetUsers";
 
 function FinancialStatsPage() {
   const { user } = useContext(AppContext);
@@ -19,18 +21,13 @@ function FinancialStatsPage() {
     data: false,
   });
   const [dateRange, setDateRange] = useState([null, null]);
-
-  const [users, setUsers] = useState([]);
+  const {users, loading: loadingUsers} = useGetUsers({fetchOnMount: true})
 
   useEffect(() => {
     if (user.role === UserRole.ADMIN || user.role === UserRole.MANAGER) {
       handleFetchData();
     }
   }, [user.role, selectedUserId, dateRange]);
-
-  useEffect(() => {
-    handleFetchUsers();
-  }, []);
 
   const setLoading = (field: string, value: boolean) => {
     _setLoading((cur) => ({ ...cur, [field]: value }));
@@ -59,37 +56,6 @@ function FinancialStatsPage() {
 
     setLoading("data", false);
   }
-
-  async function handleFetchUsers() {
-    try {
-      let url = "";
-      if (user?.role === UserRole.ADMIN) {
-        url = "user";
-      } else if (user?.role === UserRole.MANAGER) {
-        url = "manager/referrals";
-      }
-
-      try {
-        setLoading("users", true);
-        const resp = await withCredentials((headers) => api.get(url, headers));
-        setUsers(resp.data);
-      } catch (error) {
-        console.log(error);
-      }
-      setLoading("users", false);
-    } catch (error) {}
-  }
-
-  const userOptions = users.map((user) => ({
-    value: user.email || user.telegram_username || user.phone,
-    id: user.id,
-    searchStr: [
-      user.name,
-      user.surname,
-      user.email,
-      user.telegram_username,
-    ].join(" "),
-  }));
 
   const columns: ColumnsType<any> = [
     {
@@ -151,22 +117,7 @@ function FinancialStatsPage() {
       style={{ display: "flex", alignItems: "center", flexDirection: "column" }}
     >
       <Space direction="vertical">
-        <AutoComplete
-          allowClear
-          disabled={loading.users}
-          style={{ width: "100%" }}
-          options={userOptions}
-          placeholder="Выберите пользователя"
-          filterOption={(inputValue, option) =>
-            option!.searchStr
-              .toLowerCase()
-              .indexOf(inputValue.toLowerCase()) !== -1
-          }
-          onSelect={(_value, option) => {
-            setSelectedUserId(option.id);
-          }}
-          onClear={() => setSelectedUserId(null)}
-        />
+        <UserSelect loading={loadingUsers} users={users} onChange={val => setSelectedUserId(val)}/>
         <RangePicker
           showTime={{
             defaultOpenValue: [dayjs().startOf("day"), dayjs().endOf("day")],
