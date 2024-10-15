@@ -10,15 +10,25 @@ import {
   notification,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
+<<<<<<< HEAD
+import { useState } from "react";
+=======
 import { useContext, useEffect, useState } from "react";
+>>>>>>> 9ce864be6856cf29ab0f7c3930023d31d9d8bbcd
 import { api, withCredentials } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
 import ReferralStatisticsModal from "../components/ReferralStatisticsModal";
 import { useNavigate } from "react-router-dom"; // Добавлено для использования навигации
 import { getUserTelegramLabel } from "@utils/user"; // Добавлено для логики TG
 import InlineText from "components/InlineText";
+<<<<<<< HEAD
+import UserSelect from "../components/UserSelect/UserSelect";
+import useGetUsers from "../hooks/useGetUsers";
+import { CurrencyFormatter } from "@utils/common";
+=======
 import { AppContext } from "../context/AppContext";
 import { UserRole } from "@customTypes/enum/UserRole";
+>>>>>>> 9ce864be6856cf29ab0f7c3930023d31d9d8bbcd
 
 const { Text } = Typography;
 
@@ -26,15 +36,28 @@ const Users = () => {
   const {user} = useContext(AppContext);
   const [messageModalOpen, setMessageModalOpen] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
-  const [appState, setAppState] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [loadingSendMessage, setLoadingSendMessage] = useState(false);
   const [referralModalOpen, setReferralModalOpen] = useState<string | null>(
     null
   );
   const [notificationApi, contextHolder] = notification.useNotification();
   const navigate = useNavigate(); // Добавлено для использования навигации
+  const {
+    users,
+    loading: loadingUsers,
+    refetch,
+  } = useGetUsers({ fetchOnMount: true });
+  const [filter, setFilter] = useState<any>({
+    userId: null,
+  });
 
+<<<<<<< HEAD
+  function handleFetchData() {
+    const params = {};
+    for (const [key, value] of Object.entries(filter)) {
+      if (value === "" || value === null || value === undefined) continue;
+      params[key] = value;
+=======
   useEffect(() => {
     if(!user) return;
     fetchData();
@@ -56,7 +79,9 @@ const Users = () => {
       console.log(error);
     } finally {
       setLoading(false);
+>>>>>>> 9ce864be6856cf29ab0f7c3930023d31d9d8bbcd
     }
+    refetch(params);
   }
 
   async function sendMessage(userId: string, message: string) {
@@ -82,7 +107,7 @@ const Users = () => {
       await withCredentials((headers) =>
         api.delete(`/user/${userId}`, headers)
       );
-      await fetchData();
+      await handleFetchData();
     } catch (err) {
       console.log(err);
     }
@@ -155,31 +180,32 @@ const Users = () => {
       dataIndex: "balance",
       key: "balance",
       width: 100,
+      align: 'right',
       render: (text) => (
-        <InlineText style={{ whiteSpace: "nowrap" }}>
-          {text.toFixed(2)}
+        <InlineText style={{ whiteSpace: "nowrap", textAlign: "right" }}>
+          {CurrencyFormatter.format(text)}
         </InlineText>
       ),
     },
     {
       title: <Text>Проиграно за последнюю неделю</Text>,
-      dataIndex: "lastTotalLoss",
       key: "lastTotalLoss",
       width: 100,
-      render: (value) => (
+      align: 'right',
+      render: (_: any, item: any) => (
         <InlineText style={{ whiteSpace: "nowrap" }}>
-          {value.toFixed(2)}
+          {CurrencyFormatter.format(item.totalLoss-item.lastTotalLoss)}
         </InlineText>
       ),
     },
     {
       title: "Заработано за последнюю неделю",
-      dataIndex: "lastTotalEarned",
       key: "lastTotalEarned",
       width: 100,
-      render: (value) => (
-        <InlineText style={{ whiteSpace: "nowrap" }}>
-          {value.toFixed(2)}
+      align: 'right',
+      render: (_:any, item: any) => (
+        <InlineText style={{ whiteSpace: "nowrap", textAlign: "right" }}>
+          {CurrencyFormatter.format(item.totalEarned - item.lastTotalEarned)}
         </InlineText>
       ),
     },
@@ -188,9 +214,10 @@ const Users = () => {
       dataIndex: "totalLoss",
       key: "totalLoss",
       width: 100,
+      align: 'right',
       render: (_t, item) => (
-        <InlineText style={{ whiteSpace: "nowrap" }}>
-          {item.totalLoss.toFixed(2)}
+        <InlineText style={{ whiteSpace: "nowrap", textAlign: "right" }}>
+          {CurrencyFormatter.format(item.totalLoss)}
         </InlineText>
       ),
     },
@@ -199,9 +226,10 @@ const Users = () => {
       dataIndex: "totalEarned",
       key: "totalEarned",
       width: 100,
+      align: 'right',
       render: (_t, item) => (
-        <InlineText style={{ whiteSpace: "nowrap" }}>
-          {item.totalEarned.toFixed(2)}
+        <InlineText style={{ whiteSpace: "nowrap", textAlign: "right" }}>
+          {CurrencyFormatter.format(item.totalEarned)}
         </InlineText>
       ),
     },
@@ -214,16 +242,34 @@ const Users = () => {
           <Button onClick={(e) => e.preventDefault()}>Опции</Button>
         </Dropdown>
       ),
-    }
+    },
   ];
 
   return (
     <>
       {contextHolder}
+
+      <Space direction="horizontal" style={{ marginBottom: 16 }}>
+        <div style={{ minWidth: 200 }}>
+          <UserSelect
+            users={users}
+            loading={loadingUsers}
+            onChange={(val) => setFilter((f) => ({ ...f, userId: val }))}
+          />
+        </div>
+        <Button
+          type="primary"
+          onClick={handleFetchData}
+          loading={loadingUsers}
+          disabled={loadingUsers}
+        >
+          Поиск
+        </Button>
+      </Space>
       <Table
-        loading={loading}
+        loading={loadingUsers}
         columns={columns}
-        dataSource={appState}
+        dataSource={users}
         rowKey={(user) => user.id}
         scroll={{ x: "max-content", y: 500 }}
       />
