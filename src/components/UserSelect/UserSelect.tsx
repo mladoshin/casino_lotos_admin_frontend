@@ -5,12 +5,21 @@ import React, { useMemo } from "react";
 
 interface UserSelectProps {
   users: User[];
+  defaultValue?: any;
   loading?: boolean;
-  placeholder?: string
+  placeholder?: string;
+  disabled?: boolean;
   onChange?: (val: string) => void;
 }
 
-function UserSelect({ users, loading, placeholder, onChange }: UserSelectProps) {
+function UserSelect({
+  users,
+  loading,
+  placeholder,
+  defaultValue,
+  disabled,
+  onChange,
+}: UserSelectProps) {
   const userOptions = useMemo(() => {
     return users.map((user) => ({
       value: getUserLabel(user),
@@ -30,8 +39,9 @@ function UserSelect({ users, loading, placeholder, onChange }: UserSelectProps) 
   return (
     <AutoComplete
       allowClear
-      disabled={loading}
+      disabled={loading || disabled}
       style={{ width: "100%" }}
+      defaultValue={defaultValue}
       options={userOptions}
       placeholder={placeholder ?? "Выберите пользователя"}
       filterOption={(inputValue, option) =>

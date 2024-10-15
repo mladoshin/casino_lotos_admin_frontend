@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import moment from "moment";
 import { DatePicker } from "antd";
+import { CurrencyFormatter } from "@utils/common";
 
 type UserMetricsData = {
   visitorsData: {
@@ -75,22 +76,22 @@ function DashboardPage() {
             <span>{userMetrics.playersData.oldPlayersCount}</span>
           </div>
 
-          <h3>
-            Пополнения и снятия:
+          <h3 style={{marginTop: 24}}>
+            Пополнения и снятия
           </h3>
           <div>
             <b>Пополнения: </b>
-            <span>{userMetrics.incomeExpenseData.income} ₽</span>
+            <span>{CurrencyFormatter.format(userMetrics.incomeExpenseData.income)}</span>
           </div>
 
           <div>
             <b>Снятия: </b>
-            <span>{userMetrics.incomeExpenseData.expense} ₽</span>
+            <span>{CurrencyFormatter.format(userMetrics.incomeExpenseData.expense)}</span>
           </div>
 
           <div>
             <b>Доход: </b>
-            <span>{userMetrics.incomeExpenseData.profit} ₽</span>
+            <span>{CurrencyFormatter.format(userMetrics.incomeExpenseData.profit)}</span>
           </div>
         </>
       )}

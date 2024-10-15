@@ -19,6 +19,7 @@ import TransactionLogsPage from "./pages/TransactionLogsPage";
 import { StyleProvider } from "@ant-design/cssinjs";
 import Cashiers from "./pages/Cashiers";
 import DashboardPage from "./pages/DashboardPage";
+import GameHistory from "./pages/GameHistory";
 
 export default () => {
 
@@ -43,6 +44,7 @@ export default () => {
             <Route path="/casino-config" element={<CasinoConfig />} />
             <Route path="/financial-stats" element={<FinancialStatsPage />} />
             <Route path="/transaction-logs" element={<TransactionLogsPage />} />
+            <Route path="/game-history" element={<GameHistory />} />
 
             <Route path="/notifications" element={<Notifications />} />
 
