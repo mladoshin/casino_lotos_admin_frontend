@@ -233,7 +233,7 @@ const Users = () => {
       </Space>
       <Table
         loading={loadingUsers}
-        columns={columns}
+        columns={columns as any}
         dataSource={users}
         rowKey={(user) => user.id}
         scroll={{ x: "max-content", y: 500 }}
