@@ -10,30 +10,20 @@ import {
   notification,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
-<<<<<<< HEAD
 import { useState } from "react";
-=======
-import { useContext, useEffect, useState } from "react";
->>>>>>> 9ce864be6856cf29ab0f7c3930023d31d9d8bbcd
 import { api, withCredentials } from "../services/api";
 import { DeleteOutlined } from "@ant-design/icons";
 import ReferralStatisticsModal from "../components/ReferralStatisticsModal";
 import { useNavigate } from "react-router-dom"; // Добавлено для использования навигации
 import { getUserTelegramLabel } from "@utils/user"; // Добавлено для логики TG
 import InlineText from "components/InlineText";
-<<<<<<< HEAD
 import UserSelect from "../components/UserSelect/UserSelect";
 import useGetUsers from "../hooks/useGetUsers";
 import { CurrencyFormatter } from "@utils/common";
-=======
-import { AppContext } from "../context/AppContext";
-import { UserRole } from "@customTypes/enum/UserRole";
->>>>>>> 9ce864be6856cf29ab0f7c3930023d31d9d8bbcd
 
 const { Text } = Typography;
 
 const Users = () => {
-  const {user} = useContext(AppContext);
   const [messageModalOpen, setMessageModalOpen] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
   const [loadingSendMessage, setLoadingSendMessage] = useState(false);
@@ -51,35 +41,11 @@ const Users = () => {
     userId: null,
   });
 
-<<<<<<< HEAD
   function handleFetchData() {
     const params = {};
     for (const [key, value] of Object.entries(filter)) {
       if (value === "" || value === null || value === undefined) continue;
       params[key] = value;
-=======
-  useEffect(() => {
-    if(!user) return;
-    fetchData();
-  }, [user]);
-
-  async function fetchData() {
-    let url = "";
-    if(user.role===UserRole.MANAGER){
-      url = '/manager/referrals'
-    }else{
-      url = '/user'
-    }
-
-    try {
-      setLoading(true);
-      const resp = await withCredentials((headers) => api.get(url, headers));
-      setAppState(resp.data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
->>>>>>> 9ce864be6856cf29ab0f7c3930023d31d9d8bbcd
     }
     refetch(params);
   }
