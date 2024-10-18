@@ -310,7 +310,8 @@ const IncomingTransactions = ({
           allowClear
           options={[
             { label: "Cashback", value: "cashback" },
-            { label: "Bank", value: "bank" },
+            { label: "Card", value: "card" },
+            { label: "Sbp", value: "sbp" },
             { label: "Crypto", value: "crypto" },
           ]}
         />
