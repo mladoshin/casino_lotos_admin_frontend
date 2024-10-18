@@ -10,10 +10,10 @@ import {
   notification,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import ReferralStatisticsModal from "../components/ReferralStatisticsModal";
-import { useNavigate } from "react-router-dom"; // Добавлено для использования навигации
+import { useLocation, useNavigate } from "react-router-dom"; // Добавлено для использования навигации
 import { getUserTelegramLabel } from "@utils/user"; // Добавлено для логики TG
 import InlineText from "../components/InlineText";
 import UserSelect from "../components/UserSelect/UserSelect";
@@ -44,11 +44,17 @@ const Users = () => {
 
   const [notificationApi, contextHolder] = notification.useNotification();
   const navigate = useNavigate(); // Добавлено для использования навигации
+
   const {
     users,
     loading: loadingUsers,
     refetch,
   } = useGetUsers({ fetchOnMount: true });
+
+  const { users: allUsers, loading: loadingAllUsers } = useGetUsers({
+    fetchOnMount: true,
+  });
+
   const [filter, setFilter] = useState<any>({
     userId: null,
   });
@@ -152,8 +158,8 @@ const Users = () => {
       dataIndex: "name",
       key: "name",
       width: 100,
-      render: (text) => (
-        <InlineText style={{ whiteSpace: "nowrap" }}>{text}</InlineText>
+      render: (_:any, item: any) => (
+        <InlineText style={{ whiteSpace: "nowrap" }}>{[item.name, item.surname].join(" ")}</InlineText>
       ),
     },
     {
@@ -259,8 +265,8 @@ const Users = () => {
       <Space direction="horizontal" style={{ marginBottom: 16 }}>
         <div style={{ minWidth: 200 }}>
           <UserSelect
-            users={users}
-            loading={loadingUsers}
+            users={allUsers}
+            loading={loadingAllUsers}
             onChange={(val) => setFilter((f) => ({ ...f, userId: val }))}
           />
         </div>

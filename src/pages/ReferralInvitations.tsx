@@ -1,8 +1,10 @@
 import {
   Button,
   DatePicker,
+  Dropdown,
   Form,
   Input,
+  MenuProps,
   Modal,
   Space,
   Table,
@@ -14,6 +16,9 @@ import { ColumnsType } from "antd/es/table";
 const { Text } = Typography;
 import { DeleteOutlined } from "@ant-design/icons";
 import moment from "moment";
+import InlineText from "components/InlineText";
+import { InfoCircleOutlined } from "@ant-design/icons";
+import ManagerReferralHistoryModal from "components/ManagerReferralHistoryModal/ManagerReferralHistoryModal";
 
 function ReferralInvitations() {
   const [referralInvitations, setReferralInvitations] = useState<any[]>([]);
@@ -26,6 +31,12 @@ function ReferralInvitations() {
     loadingCreateReferralInvitations,
     setLoadingCreateReferralInvitations,
   ] = useState(false);
+  const [managerReferralHistoryModalOpen, setManagerReferralHistoryModalOpen] =
+    useState<any>({
+      open: false,
+      referralInvitationId: null,
+    });
+
   const [expireDate, setExpireDate] = useState("");
 
   useEffect(() => {
@@ -77,6 +88,26 @@ function ReferralInvitations() {
     }
   }
 
+  const dropdownActionMenuItems = (item: any): MenuProps["items"] => {
+    return [
+      {
+        key: "0",
+        label: "Пользователи",
+        onClick: () =>
+          setManagerReferralHistoryModalOpen({
+            open: true,
+            referralInvitationId: item.id,
+          }),
+      },
+      {
+        key: "6",
+        label: "Удалить",
+        danger: true,
+        onClick: () => handleDeleteReferralInvitation(item.id),
+      },
+    ];
+  };
+
   const columns: ColumnsType<any> = [
     {
       title: "Дата создания",
@@ -87,11 +118,24 @@ function ReferralInvitations() {
       ),
     },
     {
-      title: "Статус",
-      dataIndex: "is_used",
-      key: "is_used",
-      render: (isUsed) => (
-        <Text>{isUsed ? "Использовано" : "Не использовано"}</Text>
+      title: "Количество регистраций",
+      dataIndex: "nusers",
+      key: "nusers",
+      render: (text: number, item: any) => (
+        <InlineText>
+          {text}
+          <Button
+            onClick={() =>
+              setManagerReferralHistoryModalOpen({
+                open: true,
+                referralInvitationId: item.id,
+              })
+            }
+            icon={<InfoCircleOutlined />}
+            type="link"
+            style={{ marginLeft: 4 }}
+          />
+        </InlineText>
       ),
     },
     {
@@ -110,20 +154,9 @@ function ReferralInvitations() {
       title: "",
       key: "action",
       render: (_, item) => (
-        <Space
-          style={{
-            width: "100%",
-            marginLeft: 20,
-            justifyContent: "flex-end",
-            padding: "0px 30px",
-          }}
-        >
-          <Button
-            icon={<DeleteOutlined />}
-            danger
-            onClick={() => handleDeleteReferralInvitation(item.id)}
-          />
-        </Space>
+        <Dropdown menu={{ items: dropdownActionMenuItems(item) }}>
+          <Button onClick={(e) => e.preventDefault()}>Опции</Button>
+        </Dropdown>
       ),
     },
   ];
@@ -168,6 +201,19 @@ function ReferralInvitations() {
           </Form.Item>
         </Form>
       </Modal>
+
+      <ManagerReferralHistoryModal
+        open={managerReferralHistoryModalOpen.open}
+        referralInvitationId={
+          managerReferralHistoryModalOpen.referralInvitationId
+        }
+        onClose={() =>
+          setManagerReferralHistoryModalOpen({
+            open: false,
+            referralInvitationId: null,
+          })
+        }
+      />
     </div>
   );
 }
