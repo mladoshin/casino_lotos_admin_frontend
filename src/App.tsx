@@ -20,6 +20,7 @@ import { StyleProvider } from "@ant-design/cssinjs";
 import Cashiers from "./pages/Cashiers";
 import DashboardPage from "./pages/DashboardPage";
 import GameHistory from "./pages/GameHistory";
+import DashboardBotUsers from "./pages/DashboardBotUsers";
 
 export default () => {
 
@@ -52,6 +53,7 @@ export default () => {
             <Route path="/account" element={<AccountPage />} />
 
             <Route path="/managers" element={<Managers />} />
+            <Route path="/dashboard-bot-users" element={<DashboardBotUsers />} />
             <Route path="/cashiers" element={<Cashiers />} />
 
             <Route
