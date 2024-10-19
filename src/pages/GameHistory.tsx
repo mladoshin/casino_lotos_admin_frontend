@@ -34,22 +34,11 @@ function GamesLogList({ logs, loading }: GamesLogListProps) {
       ),
     },
     {
-      title: "Игра",
-      dataIndex: "gameName",
-      key: "gameName",
+      title: "Id игры",
+      dataIndex: "gameId",
+      key: "gameId",
       width: 100,
       render: (text) => <InlineText>{text}</InlineText>,
-    },
-    {
-      title: "cash",
-      dataIndex: "before",
-      key: "before",
-      width: 100,
-      render: (text) => (
-        <InlineText style={{ whiteSpace: "nowrap" }}>
-          {CurrencyFormatter.format(+text)}
-        </InlineText>
-      ),
     },
     {
       title: "bet",
