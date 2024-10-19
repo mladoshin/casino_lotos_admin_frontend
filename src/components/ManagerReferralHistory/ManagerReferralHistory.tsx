@@ -82,6 +82,15 @@ function ManagerReferralHistory({
         <InlineText>{moment(text).format("DD.MM.YYYY HH:mm:ss")}</InlineText>
       ),
     },
+    {
+      title: "Тип ссылки",
+      dataIndex: "source",
+      key: "source",
+      width: 150,
+      render: (text) => (
+        <InlineText>{text}</InlineText>
+      ),
+    },
   ];
 
   return (
