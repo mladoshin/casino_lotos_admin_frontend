@@ -159,7 +159,7 @@ function GameHistory({ user: selectedUser }: GameHistoryProps) {
       const resp = await withCredentials((headers) =>
         api.get(`/game-history/${sessionId}`, headers)
       );
-      setSessionLogs((s) => ({ ...s, [sessionId]: resp.data?.content?.log }));
+      setSessionLogs((s) => ({ ...s, [sessionId]: resp.data }));
     } catch (error) {
       console.log(error);
     }
