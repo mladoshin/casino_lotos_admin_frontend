@@ -167,7 +167,7 @@ function GameHistory({ user: selectedUser }: GameHistoryProps) {
   }
 
   const collapseItems = gameSessions?.map((session) => ({
-    label: `${session.sessionId} (${moment(session.createdAt).format(
+    label: `${session.sessionId} (${moment(session.date).format(
       "DD.MM.YYYY HH:mm:ss"
     )})`,
     key: session.sessionId,
