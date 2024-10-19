@@ -19,48 +19,63 @@ import moment from "moment";
 import InlineText from "components/InlineText";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import ManagerReferralHistoryModal from "components/ManagerReferralHistoryModal/ManagerReferralHistoryModal";
+import ReferralInvitationForm from "components/ReferralInvitationForm/ReferralInvitationForm";
+import Swal from "sweetalert2";
+import CopyableText from "components/CopyableText/CopyableText";
 
 function ReferralInvitations() {
   const [referralInvitations, setReferralInvitations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [
-    createReferralInvitationModalOpen,
-    setCreateReferralInvitationModalOpen,
-  ] = useState(false);
-  const [
-    loadingCreateReferralInvitations,
-    setLoadingCreateReferralInvitations,
-  ] = useState(false);
+  const [referralInvitationModalOpen, setReferralInvitationModalOpen] =
+    useState({
+      open: false,
+      referrralInvitation: null,
+    });
+
+  const [loadingSaveReferralInvitations, setLoadingSaveReferralInvitations] =
+    useState<boolean>(false);
+
   const [managerReferralHistoryModalOpen, setManagerReferralHistoryModalOpen] =
     useState<any>({
       open: false,
       referralInvitationId: null,
     });
 
-  const [expireDate, setExpireDate] = useState("");
-
   useEffect(() => {
     fetchData();
   }, []);
 
-  async function handleCreateReferralInvitation(expireDate: string) {
+  async function handleSubmitReferralInviatationForm(name: string) {
+    const referralInvitation = referralInvitationModalOpen.referrralInvitation;
     try {
-      setLoadingCreateReferralInvitations(true);
-      await withCredentials((headers) =>
-        api.post("referral-invite", { expire_date: expireDate }, headers)
-      );
+      setLoadingSaveReferralInvitations(true);
+      const body = {
+        name,
+      };
+      if (referralInvitation) {
+        //edit
+        await withCredentials((headers) =>
+          api.patch(`/referral-invite/${referralInvitation.id}`, body, headers)
+        );
+      } else {
+        //create new
+        await withCredentials((headers) =>
+          api.post("referral-invite", body, headers)
+        );
+      }
+
       handleModalClose();
       await fetchData();
     } catch (error) {
       console.log(error);
+      Swal.fire("Error", error.message, "error");
     } finally {
-      setLoadingCreateReferralInvitations(false);
+      setLoadingSaveReferralInvitations(false);
     }
   }
 
   const handleModalClose = () => {
-    setCreateReferralInvitationModalOpen(false);
-    setExpireDate("");
+    setReferralInvitationModalOpen({ open: false, referrralInvitation: null });
   };
 
   async function fetchData() {
@@ -100,7 +115,16 @@ function ReferralInvitations() {
           }),
       },
       {
-        key: "6",
+        key: "1",
+        label: "Изменить",
+        onClick: () =>
+          setReferralInvitationModalOpen({
+            open: true,
+            referrralInvitation: item,
+          }),
+      },
+      {
+        key: "2",
         label: "Удалить",
         danger: true,
         onClick: () => handleDeleteReferralInvitation(item.id),
@@ -110,11 +134,19 @@ function ReferralInvitations() {
 
   const columns: ColumnsType<any> = [
     {
+      title: "Название",
+      dataIndex: "name",
+      key: "name",
+      render: (text: string) => (
+        <InlineText>{text}</InlineText>
+      ),
+    },
+    {
       title: "Дата создания",
       dataIndex: "created_at",
       key: "created_at",
       render: (timestamp) => (
-        <Text>{moment(timestamp).format("D.MM.YYYY")}</Text>
+        <InlineText>{moment(timestamp).format("D.MM.YYYY")}</InlineText>
       ),
     },
     {
@@ -142,13 +174,13 @@ function ReferralInvitations() {
       title: "Ссылка",
       dataIndex: "link",
       key: "link",
-      render: (link) => <Text>{link}</Text>,
+      render: (link) => <CopyableText>{link}</CopyableText>,
     },
     {
       title: "ТГ Ссылка",
       dataIndex: "tg_link",
       key: "tg_link",
-      render: (link) => <Text>{link}</Text>,
+      render: (link) => <CopyableText>{link}</CopyableText>,
     },
     {
       title: "",
@@ -172,34 +204,34 @@ function ReferralInvitations() {
       <Space>
         <Button
           type="primary"
-          onClick={() => setCreateReferralInvitationModalOpen(true)}
+          onClick={() =>
+            setReferralInvitationModalOpen({
+              open: true,
+              referrralInvitation: null,
+            })
+          }
         >
           Создать ссылку
         </Button>
       </Space>
 
       <Modal
-        open={!!createReferralInvitationModalOpen}
-        title="Новая реферальная ссылка"
+        open={!!referralInvitationModalOpen.open}
+        title={
+          !referralInvitationModalOpen.referrralInvitation
+            ? "Новая реферальная ссылка"
+            : "Редактирование реферальной ссылки"
+        }
         onCancel={handleModalClose}
-        footer={[
-          <Button key="back" onClick={handleModalClose}>
-            Отменить
-          </Button>,
-          <Button
-            type="primary"
-            loading={loadingCreateReferralInvitations}
-            onClick={() => handleCreateReferralInvitation(expireDate)}
-          >
-            Отправить
-          </Button>,
-        ]}
+        footer={null}
       >
-        <Form layout="vertical">
-          <Form.Item label="Действует до" name="expire_date">
-            <DatePicker onChange={(_, date: string) => setExpireDate(date)} />
-          </Form.Item>
-        </Form>
+        <ReferralInvitationForm
+          open={!!referralInvitationModalOpen.open}
+          initialValue={referralInvitationModalOpen?.referrralInvitation}
+          loading={loadingSaveReferralInvitations}
+          onClose={handleModalClose}
+          onSubmit={handleSubmitReferralInviatationForm}
+        />
       </Modal>
 
       <ManagerReferralHistoryModal
