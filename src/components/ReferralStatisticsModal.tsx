@@ -29,7 +29,7 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
       fetchReferralStatistics();
       fetchAllReferrals();
     }
-  }, [userId]);
+  }, [userId, filter]);
 
   function getUserRtp(user: any) {
     if (!user.totalLoss) return "N/A";
@@ -169,8 +169,7 @@ const ReferralStatisticsModal: React.FC<ReferralStatisticsModalProps> = ({
         <Select
           defaultValue={filter}
           style={{ width: 150 }}
-          disabled
-          //onChange={(val) => setFilter(val)}
+          onChange={(val) => setFilter(val)}
           options={[
             { value: "all", label: "За всё время" },
             { value: "week", label: "За неделю" },
