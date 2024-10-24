@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { api, withCredentials } from "../services/api";
 import moment from "moment";
-import { Button, DatePicker, Space } from "antd";
+import { Button, Card, Col, DatePicker, Row, Space } from "antd";
 import { CurrencyFormatter } from "@utils/common";
 import { NotificationOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,10 @@ type UserMetricsData = {
     expense: number;
     income: number;
     profit: number;
+  };
+  usersWithDeposits: {
+    oldCount: number;
+    newCount: number;
   };
 };
 
@@ -63,56 +67,101 @@ function DashboardPage() {
       <h2>Статистика от {date.format("DD.MM.YYYY")}</h2>
       {userMetrics && (
         <>
-          <h3>
-            Посетителей:{" "}
-            {userMetrics.visitorsData.unauthorizedVisitorsCount +
-              userMetrics.visitorsData.authorizedVisitorsCount}
-          </h3>
-          <div>
-            <b>Незарегистрированных: </b>
-            <span>{userMetrics.visitorsData.unauthorizedVisitorsCount}</span>
-          </div>
-          <div>
-            <b>Зарегистрированных: </b>
-            <span>{userMetrics.visitorsData.authorizedVisitorsCount}</span>
-          </div>
+          <Row gutter={[16, 16]} style={{ maxWidth: "100vw" }}>
+            <Col span={12} xs={{ span: 24 }}>
+              <Card
+                style={{ width: "100%" }}
+                title={`Посетители: ${
+                  userMetrics.visitorsData.unauthorizedVisitorsCount +
+                  userMetrics.visitorsData.authorizedVisitorsCount
+                }`}
+              >
+                <div>
+                  <b>Незарегистрированных: </b>
+                  <span>
+                    {userMetrics.visitorsData.unauthorizedVisitorsCount}
+                  </span>
+                </div>
+                <div>
+                  <b>Зарегистрированных: </b>
+                  <span>
+                    {userMetrics.visitorsData.authorizedVisitorsCount}
+                  </span>
+                </div>
+              </Card>
+            </Col>
+            <Col span={12} xs={{ span: 24 }}>
+              <Card
+                style={{ width: "100%" }}
+                title={`Игроки: ${
+                  userMetrics.playersData.newPlayersCount +
+                  userMetrics.playersData.oldPlayersCount
+                }`}
+              >
+                <div>
+                  <b>Новых: </b>
+                  <span>{userMetrics.playersData.newPlayersCount}</span>
+                </div>
 
-          <h3>
-            Игроков:{" "}
-            {userMetrics.playersData.newPlayersCount +
-              userMetrics.playersData.oldPlayersCount}
-          </h3>
-          <div>
-            <b>Новых: </b>
-            <span>{userMetrics.playersData.newPlayersCount}</span>
-          </div>
+                <div>
+                  <b>Не новых: </b>
+                  <span>{userMetrics.playersData.oldPlayersCount}</span>
+                </div>
+              </Card>
+            </Col>
+          </Row>
 
-          <div>
-            <b>Не новых: </b>
-            <span>{userMetrics.playersData.oldPlayersCount}</span>
-          </div>
+          <Row gutter={[16, 16]} style={{ marginTop: 16, maxWidth: "100vw" }}>
+            <Col span={12} xs={{ span: 24 }}>
+              <Card
+                style={{ width: "100%" }}
+                title={`Пользователи с депозитами: ${
+                  userMetrics.usersWithDeposits.oldCount +
+                  userMetrics.usersWithDeposits.newCount
+                }`}
+              >
+                <div>
+                  <b>Новых: </b>
+                  <span>{userMetrics.usersWithDeposits.newCount}</span>
+                </div>
 
-          <h3 style={{ marginTop: 24 }}>Пополнения и снятия</h3>
-          <div>
-            <b>Пополнения: </b>
-            <span>
-              {CurrencyFormatter.format(userMetrics.incomeExpenseData.income)}
-            </span>
-          </div>
+                <div>
+                  <b>Не новых: </b>
+                  <span>{userMetrics.usersWithDeposits.oldCount}</span>
+                </div>
+              </Card>
+            </Col>
+            <Col span={12} xs={{ span: 24 }}>
+              <Card title={`Пополнения и снятия`} style={{ width: "100%" }}>
+                <div>
+                  <b>Пополнения: </b>
+                  <span>
+                    {CurrencyFormatter.format(
+                      userMetrics.incomeExpenseData.income
+                    )}
+                  </span>
+                </div>
 
-          <div>
-            <b>Снятия: </b>
-            <span>
-              {CurrencyFormatter.format(userMetrics.incomeExpenseData.expense)}
-            </span>
-          </div>
+                <div>
+                  <b>Снятия: </b>
+                  <span>
+                    {CurrencyFormatter.format(
+                      userMetrics.incomeExpenseData.expense
+                    )}
+                  </span>
+                </div>
 
-          <div>
-            <b>Доход: </b>
-            <span>
-              {CurrencyFormatter.format(userMetrics.incomeExpenseData.profit)}
-            </span>
-          </div>
+                <div>
+                  <b>Доход: </b>
+                  <span>
+                    {CurrencyFormatter.format(
+                      userMetrics.incomeExpenseData.profit
+                    )}
+                  </span>
+                </div>
+              </Card>
+            </Col>
+          </Row>
         </>
       )}
     </div>
